@@ -2,8 +2,4 @@
 members = [
     "core",
     "test",
-    "tools/policytool",
-    "tools/jobtool",
-    "tools/tasktool",
-    "tools/precedencemaptool",
 ]
