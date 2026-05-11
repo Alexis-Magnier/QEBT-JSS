@@ -1,4 +1,5 @@
 from pathlib import Path
+from collections import deque
 import json
 
 from core import *
@@ -28,15 +29,6 @@ def load_policies(path:Path) -> PolicyTable:
 
 p = load_sequenceGraph("./data/simple-sequence-graph.json")
 policies = load_policies("./data/disassembly-policy-table.json")
-
-import core.Policy.PolicyTable
-
-# from PolicyTable import similarity_score, cosine_similarity
-
-# r = policies.query(q, similarity_func=cosine_similarity)
-# print("\n".join([f"{p.name} : {s}" for p, s in r.result]))
-
-from collections import deque
 
 queue = deque[Job]()
 visited = set[Job]()
