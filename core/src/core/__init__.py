@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from .Config import *
-from .Policy import *
-from .SequenceGraph import *
-from .Task import *
-from .Job import *
-from .Sequence import *
-from .Context import *
-from .Policy import *
+from .Config import Config
+from .Policy import Policy, PolicyTable
+from .SequenceGraph import SequenceGraph
+from .Task import Task
+from .Job import Job
+from .Sequence import Sequence
+from .Context import Context
