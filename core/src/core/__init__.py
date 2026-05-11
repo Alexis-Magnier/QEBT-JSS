@@ -9,4 +9,3 @@ from .Job import Job
 from .Sequence import Sequence
 
 from .Policy import *
-from .BT import *

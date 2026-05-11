@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from dataclasses import dataclass, field
-from .Job import JobID, INVALID_JOB_ID
+from .Job import Job
 from typing import  NewType
 from .types import *
 
@@ -13,28 +13,9 @@ class Sequence:
     name: str = ""
 
     # Content
-    jobs: list[JobID] = field(default_factory=list)
-    start: JobID = INVALID_JOB_ID
-    end: JobID = INVALID_JOB_ID
+    jobs: list[Job] = field(default_factory=list)
+    start: Job = None
+    end: Job = None
 
-    previous: list[SequenceID] = field(default_factory=list)
-    next: list[SequenceID] = field(default_factory=list)
-
-    @staticmethod
-    def From_dict(data: dict) -> Sequence:
-        """ Creates a job from a dictionary
-        """
-        return SequenceID(
-            id=data["id"],
-            name=data.get("name", ""),
-            jobs=data.get("jobs", []),
-        )
-
-    def to_dict(self) -> Sequence:
-        return {
-            "id": self.id,
-            "name": self.name,
-            "jobs": self.jobs
-        }
-
-    
+    previous: list[Sequence] = field(default_factory=list)
+    next: list[Sequence] = field(default_factory=list)

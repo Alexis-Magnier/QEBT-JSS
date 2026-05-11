@@ -98,7 +98,7 @@ class PolicyTable:
 
             
             # Descriptor similarity
-            sim = similarity_func(policy.descriptors, query.descriptors, query.similarity)
+            sim = similarity_func(policy.descriptors, query.descriptors, query.weights)
             
             p.append((policy, sim))
         

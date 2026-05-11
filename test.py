@@ -1,8 +1,7 @@
 from pathlib import Path
 import json
 
-import core
-from core import SequenceGraph 
+from core import *
 
 def load_sequenceGraph(path:Path) -> SequenceGraph:
     with open(path, "r") as file:
@@ -21,44 +20,48 @@ def load_sequenceGraph(path:Path) -> SequenceGraph:
     return p
 
 
-def load_policies(path:Path) -> core.PolicyTable:
+def load_policies(path:Path) -> PolicyTable:
     with open(path) as file:
-        policies = core.PolicyTable.From_dict(json.load(file)["policy-base"])
+        policies = PolicyTable.From_dict(json.load(file)["policy-base"])
     
     return policies
 
 p = load_sequenceGraph("./data/simple-sequence-graph.json")
-policies = load_policies("./data/policy-table.json")
+policies = load_policies("./data/disassembly-policy-table.json")
 
-q = core.Query(
-    domains={"Attack"},
-    descriptors={
-        "world.difficulty": 0.5,
-        "player.bored": True,
-        "this.health": 0.63,
-        "this.defensive": 0.9,
-        "this.aggresive": 0.1,
-        "this.underAttack": False
-    },
-    similarity={
-        "this.defensive": 1
-    }
-)
+import core.Policy.PolicyTable
 
-from core.Policy.PolicyTable import similarity_score, cosine_similarity
+# from PolicyTable import similarity_score, cosine_similarity
 
-r = policies.query(q, similarity_func=cosine_similarity)
-print("\n".join([f"{p.name} : {s}" for p, s in r.result]))
+# r = policies.query(q, similarity_func=cosine_similarity)
+# print("\n".join([f"{p.name} : {s}" for p, s in r.result]))
 
+from collections import deque
 
-print(
-    "\n".join([
-        f" \
-{s.id} \
-{[p.id for p in s.previous]} \
-{[n.id for n in s.next]} \
-{[f"{j.name}, t:{j.tasks}" for j in s.jobs]} \
-        "
-        for s in p.sequences.values()
-    ])
-)
+queue = deque[Job]()
+visited = set[Job]()
+
+for sequence in p.sequences.values():
+    if len(sequence.previous) == 0:
+        queue.append(sequence.start)
+
+while len(queue) != 0:
+    current = queue.pop()
+
+    if not set(current.previous) <= visited:
+        continue 
+
+    visited.add(current)
+    print("job %d : %s" % (current.id, current.name))
+
+    for task in current.tasks:
+        r = policies.query(task.query)
+
+        if len(r.result) == 0:
+            print("no policy found for ", task.query)
+            continue
+
+        policy, score = r.result[0]
+        print("\t- %s : %s (similarity: %0.2f)" % (task.name, policy.name, score))
+
+    queue.extend(current.next)
