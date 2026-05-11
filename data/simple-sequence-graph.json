@@ -1,0 +1,43 @@
+{
+  "precedence-map": {
+    "name": "simple",
+    "version": "1",
+    "jobs": [
+      {
+        "id": 0,
+        "name": "A",
+        "requires": [],
+        "tasks": [
+          {
+            "id": 0,
+            "name": "Task A",
+            "query": {
+              "domains": ["screw"],
+              "descriptors": ["screw"]
+            }
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "name": "B",
+        "requires": [0]
+      },
+      {
+        "id": 2,
+        "name": "C",
+        "requires": [0]
+      },
+      {
+        "id": 3,
+        "name": "D",
+        "requires": [2]
+      },
+      {
+        "id": 4,
+        "name": "E",
+        "requires": [1, 3]
+      }
+    ]
+  }
+}
