@@ -1,6 +1,7 @@
 [tool.uv.workspace]
 members = [
     "core",
+    "test",
     "pipeline/assembler",
     "pipeline/converter",
     "pipeline/dispatcher",

@@ -223,6 +223,9 @@
             "id": 0,
             "name": "Extract cell",
             "requires": [],
+            "props": {
+              "fails": 2
+            },
             "query": {
               "domains": [
                 "ComponentExtraction"
