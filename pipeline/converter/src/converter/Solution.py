@@ -11,6 +11,22 @@ class Solution:
 
     @staticmethod
     def From_sol(path: Path) -> Solution:
+
+        def set_start_time(data: OperationData, value:float):
+            data.start_time = value
+
+        def set_end_time(data: OperationData, value:float):
+            data.end_time = value
+
+        def set_active(data: OperationData, value:float):
+            data.active = value > 0.5
+
+        VALUE_TO = {
+            "Sijk": set_start_time, 
+            "Cijk": set_end_time, 
+            "Xijk": set_active, 
+        }
+
         with open(path, "rt") as file:
             solution: dict[Operation, OperationData] = dict()
 
@@ -26,7 +42,7 @@ class Solution:
             # for each stripped line of the file
             while (line := file.readline().strip()):
                 # if the file doesn't start with "Sijk", "Cijk" or "Xijk" : skip
-                if not line.startswith(("Sijk", "Cijk", "Xijk")):
+                if not line.startswith(tuple(VALUE_TO.keys())):
                     continue
                 
                 # extract the variable from the value
@@ -56,13 +72,7 @@ class Solution:
                 if data is None:
                     data = solution[op] = OperationData()
 
-                match variable_name:
-                    case "Sijk":
-                        data.start_time = value
-                    case "Cijk":
-                        data.end_time = value
-                    case "Xijk" if value > 0.5:
-                        data.active = True
+                VALUE_TO[variable_name](data, value)
 
             # filter out operation which duration is nil
             solution = {
