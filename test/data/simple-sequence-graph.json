@@ -1,0 +1,249 @@
+{
+  "precedence-map": {
+    "name": "simple",
+    "version": "1",
+    "jobs": [
+      {
+        "id": 0,
+        "name": "Extract cover",
+        "requires": [],
+        "tasks": [
+          {
+            "id": 0,
+            "name": "Extract cover",
+            "requires": [],
+            "query": {
+              "domains": ["CoverExtraction"],
+              "descriptors": {
+                "component.width": 0.2,
+                "component.depth": 0.3,
+                "component.material.toughness": 0.3,
+                "component.material.rigidity": 0.5,
+                "component.accessibility": 0.8,
+                "component.fracture_risk": 0.1,
+                "component.flexibility": 0.4,
+                "component.surface_friction": 0.5
+              },
+              "weights": {}
+            }
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "name": "Remove screw",
+        "requires": [0],
+        "tasks": [
+          {
+            "id": 0,
+            "name": "Remove screw A",
+            "requires": [],
+            "query": {
+              "domains": ["ScrewRemoval"],
+              "descriptors": {
+                "component.width": 0.2,
+                "component.depth": 0.2,
+                "component.material.toughness": 0.3,
+                "component.material.rigidity": 0.7,
+                "component.accessibility": 0.9,
+                "component.fastener_density": 0.6,
+                "component.fracture_risk": 0.2
+              }
+            }
+          },
+          {
+            "id": 1,
+            "name": "Remove screw B",
+            "requires": [],
+            "query": {
+              "domains": ["ScrewRemoval"],
+              "descriptors": {
+                "component.width": 0.2,
+                "component.depth": 0.2,
+                "component.material.toughness": 0.3,
+                "component.material.rigidity": 0.7,
+                "component.accessibility": 0.2,
+                "component.fastener_density": 0.6,
+                "component.fracture_risk": 0.2
+              }
+            }
+          },
+          {
+            "id": 2,
+            "name": "Remove screw C",
+            "requires": [],
+            "query": {
+              "domains": ["ScrewRemoval"],
+              "descriptors": {
+                "component.width": 0.2,
+                "component.depth": 0.2,
+                "component.material.toughness": 0.3,
+                "component.material.rigidity": 0.7,
+                "component.accessibility": 0.9,
+                "component.fastener_density": 0.6,
+                "component.fracture_risk": 0.2
+              }
+            }
+          },
+          {
+            "id": 3,
+            "name": "Remove screw D",
+            "requires": [],
+            "query": {
+              "domains": ["ScrewRemoval"],
+              "descriptors": {
+                "component.width": 0.2,
+                "component.depth": 0.2,
+                "component.material.toughness": 0.3,
+                "component.material.rigidity": 0.7,
+                "component.accessibility": 0.9,
+                "component.fastener_density": 0.6,
+                "component.fracture_risk": 0.2
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "C",
+        "requires": [0],
+        "tasks": [
+          {
+            "id": 0,
+            "name": "Remove bus bar screw A",
+            "requires": [],
+            "query": {
+              "domains": ["ScrewRemoval"],
+              "descriptors": {
+                "component.width": 0.2,
+                "component.depth": 0.2,
+                "component.material.toughness": 0.3,
+                "component.material.rigidity": 0.7,
+                "component.accessibility": 0.9,
+                "component.fastener_density": 0.6,
+                "component.fracture_risk": 0.2
+              }
+            }
+          },
+          {
+            "id": 1,
+            "name": "Remove bus bar screw B",
+            "requires": [],
+            "query": {
+              "domains": ["ScrewRemoval"],
+              "descriptors": {
+                "component.width": 0.2,
+                "component.depth": 0.2,
+                "component.material.toughness": 0.3,
+                "component.material.rigidity": 0.7,
+                "component.accessibility": 0.9,
+                "component.fastener_density": 0.6,
+                "component.fracture_risk": 0.2
+              }
+            }
+          },
+          {
+            "id": 2,
+            "name": "Remove bus bar screw C",
+            "requires": [],
+            "query": {
+              "domains": ["ScrewRemoval"],
+              "descriptors": {
+                "component.width": 0.2,
+                "component.depth": 0.2,
+                "component.material.toughness": 0.3,
+                "component.material.rigidity": 0.7,
+                "component.accessibility": 0.9,
+                "component.fastener_density": 0.6,
+                "component.fracture_risk": 0.2
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "name": "D",
+        "requires": [2],
+        "tasks": [
+          {
+            "id": 0,
+            "name": "Extract bus bar",
+            "requires": [],
+            "query": {
+              "domains": ["CoverExtraction"],
+              "descriptors": {
+                "component.width": 0.1,
+                "component.depth": 0.1,
+                "component.material.toughness": 0.1,
+                "component.material.rigidity": 0.1,
+                "component.accessibility": 0.8,
+                "component.fracture_risk": 0.1,
+                "component.flexibility": 0.8,
+                "component.surface_friction": 0.8
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "name": "E",
+        "requires": [1, 3],
+        "tasks": [
+          {
+            "id": 0,
+            "name": "Extract cell",
+            "requires": [],
+            "query": {
+              "domains": [
+                "ComponentExtraction"
+              ],
+              "descriptors": {
+                "component.width": 0.4,
+                "component.depth": 0.4,
+                "component.material.toughness": 0.1,
+                "component.material.rigidity": 0.8,
+                "component.accessibility": 0.8,
+                "component.fracture_risk": 0.6,
+                "component.flexibility": 0.0,
+                "component.thermal_sensitivity": 0.9
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "name": "test",
+        "requires": [],
+        "tasks": [
+          {
+            "id": 0,
+            "name": "Extract cell",
+            "requires": [],
+            "props": {
+              "fails": 2
+            },
+            "query": {
+              "domains": [
+                "ComponentExtraction"
+              ],
+              "descriptors": {
+                "component.width": 0.4,
+                "component.depth": 0.4,
+                "component.material.toughness": 0.1,
+                "component.material.rigidity": 0.8,
+                "component.accessibility": 0.8,
+                "component.fracture_risk": 0.6,
+                "component.flexibility": 0.0,
+                "component.thermal_sensitivity": 0.9
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,413 @@
+{
+  "policy-base": {
+    "policies": [
+      {
+        "id": 0,
+        "name": "Precision screwdriver removal",
+        "domains": [
+					"FastenerRemoval",
+					"ScrewRemoval",
+					"PrecisionOperation"
+				],
+        "descriptors": {
+          "component.width": 0.2,
+          "component.depth": 0.2,
+          "component.material.toughness": 0.3,
+          "component.material.rigidity": 0.7,
+          "component.accessibility": 0.9,
+          "component.fastener_density": 0.6,
+          "component.fracture_risk": 0.2
+        },
+        "parameters": [],
+        "implementation": []
+      },
+
+      {
+        "id": 1,
+        "name": "High torque drill removal",
+        "domains": [
+					"FastenerRemoval",
+					"ScrewRemoval",
+					"HighTorqueOperation"
+				],
+        "descriptors": {
+          "component.width": 0.3,
+          "component.depth": 0.5,
+          "component.material.toughness": 0.8,
+          "component.material.rigidity": 0.8,
+          "component.accessibility": 0.4,
+          "component.fastener_density": 0.7,
+          "component.fracture_risk": 0.7
+        },
+        "parameters": [],
+        "implementation": []
+      },
+
+      {
+        "id": 2,
+        "name": "Seized fastener extraction",
+        "domains": [
+					"FastenerRemoval",
+					"RecoveryOperation",
+					"HighForceOperation"
+				],
+        "descriptors": {
+          "component.width": 0.4,
+          "component.depth": 0.6,
+          "component.material.toughness": 0.9,
+          "component.material.rigidity": 0.9,
+          "component.accessibility": 0.3,
+          "component.fastener_density": 0.8,
+          "component.fracture_risk": 0.9
+        },
+        "parameters": [],
+        "implementation": []
+      },
+
+      {
+        "id": 3,
+        "name": "Cable extraction with grippers",
+        "domains": [
+					"CableHandling",
+					"PrecisionManipulation"
+				],
+        "descriptors": {
+          "component.width": 0.1,
+          "component.depth": 0.2,
+          "component.material.toughness": 0.2,
+          "component.material.rigidity": 0.3,
+          "component.accessibility": 0.95,
+          "component.fastener_density": 0.1,
+          "component.fracture_risk": 0.1
+        },
+        "parameters": [],
+        "implementation": []
+      },
+
+      {
+        "id": 4,
+        "name": "Bulk module handling",
+        "domains": [
+					"PartHandling",
+					"TransportOperation"
+				],
+        "descriptors": {
+          "component.width": 0.9,
+          "component.depth": 0.9,
+          "component.material.toughness": 0.7,
+          "component.material.rigidity": 0.8,
+          "component.accessibility": 0.6,
+          "component.fastener_density": 0.5,
+          "component.fracture_risk": 0.4
+        },
+        "parameters": [],
+        "implementation": []
+      },
+			{
+        "id": 5,
+        "name": "Light snap-fit cover lift",
+        "domains": [
+					"CoverExtraction",
+					"SnapFitHandling",
+					"PrecisionManipulation"
+				],
+        "descriptors": {
+          "component.width": 0.3,
+          "component.depth": 0.3,
+          "component.material.toughness": 0.2,
+          "component.material.rigidity": 0.4,
+          "component.accessibility": 0.95,
+          "component.cover.fastener_density": 0.2,
+          "component.cover.snap_force": 0.3,
+          "component.fracture_risk": 0.2
+        },
+        "parameters": [],
+        "implementation": []
+      },
+      {
+        "id": 6,
+        "name": "Edge lift precision grip",
+        "domains": [
+					"CoverExtraction",
+					"PrecisionManipulation",
+					"RigidBodyHandling"
+				],
+        "descriptors": {
+          "component.width": 0.2,
+          "component.depth": 0.2,
+          "component.material.toughness": 0.6,
+          "component.material.rigidity": 0.8,
+          "component.accessibility": 0.9,
+          "component.fracture_risk": 0.2,
+          "component.flexibility": 0.1,
+          "component.surface_friction": 0.4
+        },
+        "parameters": [],
+        "implementation": []
+      },
+
+      {
+        "id": 7,
+        "name": "Dual corner lift with grippers",
+        "domains": [
+					"CoverExtraction",
+					"BalancedLifting",
+					"PrecisionManipulation"
+				],
+        "descriptors": {
+          "component.width": 0.5,
+          "component.depth": 0.5,
+          "component.material.toughness": 0.7,
+          "component.material.rigidity": 0.9,
+          "component.accessibility": 0.6,
+          "component.fracture_risk": 0.3,
+          "component.flexibility": 0.2,
+          "component.surface_friction": 0.5
+        },
+        "parameters": [],
+        "implementation": []
+      },
+
+      {
+        "id": 8,
+        "name": "Distributed suction lift",
+        "domains": [
+					"CoverExtraction",
+					"VacuumHandling",
+					"FragileSurfaceHandling"
+				],
+        "descriptors": {
+          "component.width": 0.3,
+          "component.depth": 0.3,
+          "component.material.toughness": 0.4,
+          "component.material.rigidity": 0.6,
+          "component.accessibility": 0.95,
+          "component.fracture_risk": 0.05,
+          "component.flexibility": 0.1,
+          "component.surface_friction": 0.2
+        },
+        "parameters": [],
+        "implementation": []
+      },
+
+      {
+        "id": 9,
+        "name": "Sliding edge disengagement lift",
+        "domains": [
+					"CoverExtraction",
+					"LowClearanceHandling",
+					"SlidingManipulation"
+				],
+        "descriptors": {
+          "component.width": 0.4,
+          "component.depth": 0.6,
+          "component.material.toughness": 0.6,
+          "component.material.rigidity": 0.7,
+          "component.accessibility": 0.5,
+          "component.fracture_risk": 0.4,
+          "component.flexibility": 0.3,
+          "component.surface_friction": 0.7
+        },
+        "parameters": [],
+        "implementation": []
+      },
+
+      {
+        "id": 10,
+        "name": "Full surface lift with distributed grip",
+        "domains": [
+					"CoverExtraction",
+					"HeavyComponentHandling",
+					"StabilityCriticalOperation"
+				],
+        "descriptors": {
+          "component.width": 0.8,
+          "component.depth": 0.8,
+          "component.material.toughness": 0.9,
+          "component.material.rigidity": 0.95,
+          "component.accessibility": 0.4,
+          "component.fracture_risk": 0.2,
+          "component.flexibility": 0.2,
+          "component.surface_friction": 0.6
+        },
+        "parameters": [],
+        "implementation": []
+      },
+			{
+        "id": 11,
+        "name": "Precision battery cell extraction",
+        "domains": [
+					"ComponentExtraction",
+					"BatteryCellHandling",
+					"PrecisionManipulation"
+				],
+        "descriptors": {
+          "component.width": 0.3,
+          "component.depth": 0.6,
+          "component.material.toughness": 0.3,
+          "component.material.rigidity": 0.4,
+          "component.integration_density": 0.7,
+          "component.fracture_risk": 0.2,
+          "component.thermal_sensitivity": 0.9,
+          "component.accessibility": 0.7
+        },
+        "parameters": [],
+        "implementation": []
+      },
+
+      {
+        "id": 12,
+        "name": "High stiffness pried metal part extraction",
+        "domains": [
+					"ComponentExtraction",
+					"MetalPartHandling",
+					"HighForceManipulation"
+				],
+        "descriptors": {
+          "component.width": 0.6,
+          "component.depth": 0.7,
+          "component.material.toughness": 0.9,
+          "component.material.rigidity": 0.95,
+          "component.integration_density": 0.6,
+          "component.fracture_risk": 0.6,
+          "component.thermal_sensitivity": 0.2,
+          "component.accessibility": 0.5
+        },
+        "parameters": [],
+        "implementation": []
+      },
+
+      {
+        "id": 13,
+        "name": "Adhesive-bound component peeling extraction",
+        "domains": [
+					"ComponentExtraction",
+					"AdhesiveSeparation",
+					"DelicateManipulation"
+				],
+        "descriptors": {
+          "component.width": 0.4,
+          "component.depth": 0.5,
+          "component.material.toughness": 0.4,
+          "component.material.rigidity": 0.5,
+          "component.integration_density": 0.8,
+          "component.fracture_risk": 0.4,
+          "component.thermal_sensitivity": 0.6,
+          "component.accessibility": 0.6
+        },
+        "parameters": [],
+        "implementation": []
+      },
+
+      {
+        "id": 14,
+        "name": "Deep recessed structural extraction",
+        "domains": [
+					"ComponentExtraction",
+					"LowClearanceManipulation",
+					"ComplexAssemblyHandling"
+				],
+        "descriptors": {
+          "component.width": 0.5,
+          "component.depth": 0.9,
+          "component.material.toughness": 0.7,
+          "component.material.rigidity": 0.8,
+          "component.integration_density": 0.9,
+          "component.fracture_risk": 0.5,
+          "component.thermal_sensitivity": 0.3,
+          "component.accessibility": 0.3
+        },
+        "parameters": [],
+        "implementation": []
+      },
+
+      {
+        "id": 15,
+        "name": "Fragile electrochemical component extraction",
+        "domains": [
+					"ComponentExtraction",
+					"BatteryCellHandling",
+					"HighRiskFragileHandling"
+				],
+        "descriptors": {
+          "component.width": 0.2,
+          "component.depth": 0.5,
+          "component.material.toughness": 0.2,
+          "component.material.rigidity": 0.3,
+          "component.integration_density": 0.8,
+          "component.fracture_risk": 0.9,
+          "component.thermal_sensitivity": 1.0,
+          "component.accessibility": 0.5
+        },
+        "parameters": [],
+        "implementation": []
+      },
+
+      {
+        "id": 16,
+        "name":"Modular snap-fit extraction",
+        "domains": [
+					"ComponentExtraction",
+					"SnapFitRemoval",
+					"MediumPrecisionManipulation"
+				],
+        "descriptors": {
+          "component.width": 0.4,
+          "component.depth": 0.4,
+          "component.material.toughness": 0.6,
+          "component.material.rigidity": 0.7,
+          "component.integration_density": 0.5,
+          "component.fracture_risk": 0.3,
+          "component.thermal_sensitivity": 0.2,
+          "component.accessibility": 0.8
+        },
+        "parameters": [],
+        "implementation": []
+      },
+
+      {
+        "id": 17,
+        "name": "High integration dense pack extraction",
+        "domains": [
+					"ComponentExtraction",
+					"DenseAssemblyHandling",
+					"MultiContactSeparation"
+				],
+        "descriptors": {
+          "component.width": 0.7,
+          "component.depth": 0.8,
+          "component.material.toughness": 0.8,
+          "component.material.rigidity": 0.85,
+          "component.integration_density": 1.0,
+          "component.fracture_risk": 0.6,
+          "component.thermal_sensitivity": 0.5,
+          "component.accessibility": 0.4
+        },
+        "parameters": [],
+        "implementation": []
+      },
+
+      {
+        "id": 18,
+        "name": "Light structural bracket extraction",
+        "domains": [
+					"ComponentExtraction",
+					"StructuralRemoval",
+					"RigidBodyHandling"
+				],
+        "descriptors": {
+          "component.width": 0.5,
+          "component.depth": 0.6,
+          "component.material.toughness": 0.7,
+          "component.material.rigidity": 0.9,
+          "component.integration_density": 0.6,
+          "component.fracture_risk": 0.3,
+          "component.thermal_sensitivity": 0.2,
+          "component.accessibility": 0.7
+        },
+        "parameters": [],
+        "implementation": []
+      }
+    ]
+  }
+}
