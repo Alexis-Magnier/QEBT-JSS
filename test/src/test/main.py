@@ -6,7 +6,6 @@ from collections import deque
 import json
 
 from core import *
-from converter import *
 
 from pathlib import Path
 TEST_PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -29,11 +28,16 @@ def render_graph(states, transitions):
     
 def main():
     print(TEST_PROJECT_ROOT)
+    import converter
+    import dispatcher
 
-    solution = Solution.From_sol(TEST_PROJECT_ROOT / "data/solution.sol")
+    solution = converter.Solution.From_sol(TEST_PROJECT_ROOT / "data/solution.sol")
     
+    print(solution.to_dict())
     for op, data in solution.operations.items():
         print(op, data)
+
+    d = dispatcher.Dispatcher.From_solution(solution)
 
 def temp():
     def load_sequenceGraph(path:Path) -> SequenceGraph:

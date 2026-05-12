@@ -3,7 +3,7 @@
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from .Operation import Operation, OperationData
+from .Operation import Operation, OperationData, Resource
 
 @dataclass
 class Solution:
@@ -59,6 +59,11 @@ class Solution:
                 inside = variable[a + 1:b]
                 operation, job, resource = inside.split(',')
 
+                job = job[job.find('_')+1:]
+                operation = operation[operation.find('_')+1:]
+
+                resource = Resource.From_str(resource)
+
                 # extract the variable name "Sijk", "Cijk" or "Xijk"
                 variable_name = variable[0:a]
 
@@ -86,7 +91,7 @@ class Solution:
                 collaborative_variant = Operation(
                     job = op.job,
                     operation = op.operation,
-                    resource = 'Co'
+                    resource = Resource.COLLABORATIVE
                 )
 
                 return collaborative_variant in solution
@@ -94,9 +99,26 @@ class Solution:
             solution = {
                 op: data
                 for op, data in solution.items()
-                if op.resource == 'Co' or not is_handled_by_collaborative(op)
+                if op.resource == Resource.COLLABORATIVE or not is_handled_by_collaborative(op)
             }
 
             return Solution(
                 operations=solution
             )
+        
+    @staticmethod
+    def From_dict(data:dict) -> Solution:
+        return Solution(
+            operations = {
+                Operation.From_string(op): OperationData.from_dict(data)
+                for op, data in data.get(["operations"], dict())
+            }
+        )
+    
+    def to_dict(self) -> dict:
+        return {
+            "operations": {
+                op.to_string(): data.to_dict()
+                for op, data in self.operations.items()
+            }
+        }
