@@ -10,7 +10,7 @@ class Job:
     # Serialisable data
     id: JobID = INVALID_JOB_ID
     name: str = ""
-    requires: list[JobID] = field(default_factory=list)
+    requirments: list[JobID] = field(default_factory=list)
 
     # runtime
     next: list[Job] = field(default_factory=list)

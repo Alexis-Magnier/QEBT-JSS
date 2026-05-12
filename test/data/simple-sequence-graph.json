@@ -7,6 +7,9 @@
         "id": 0,
         "name": "Extract cover",
         "requires": [],
+        "effect": {
+          "remove": ["Cover"]
+        },
         "tasks": [
           {
             "id": 0,
@@ -33,6 +36,9 @@
         "id": 1,
         "name": "Remove screw",
         "requires": [0],
+        "effect": {
+          "remove": ["Screws"]
+        },
         "tasks": [
           {
             "id": 0,
@@ -108,6 +114,9 @@
         "id": 2,
         "name": "C",
         "requires": [0],
+        "effect": {
+          "remove": ["Bus bar"]
+        },
         "tasks": [
           {
             "id": 0,

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import configparser
+from pathlib import Path
 
 class Config(configparser.ConfigParser):
     def __init__(self):
@@ -30,3 +31,14 @@ class Config(configparser.ConfigParser):
                 "logs": "${cwd}/logs",
             }
         }
+    
+class ConfigPath:
+    def __init__(self, template: str):
+        self.template = template
+
+    def resolve(self, config: Config) -> Path:
+        resolved = config.resolve(self.template)
+        return Path(resolved)
+
+    def __str__(self):
+        return self.template
