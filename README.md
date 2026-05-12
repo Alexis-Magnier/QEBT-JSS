@@ -28,6 +28,15 @@ uv sync
 
 ## Running
 ### Run tests
+
+#### Default
+
+If the venv has been activated :
 ```bash
-python test.py
+run-test
+```
+
+#### Using uv
+```bash
+uv run run-test
 ```
