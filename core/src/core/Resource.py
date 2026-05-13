@@ -8,6 +8,7 @@ class Resource:
     id: int
     name: str
     exclusive: tuple[str]
+    operation_suffix: str
 
     @staticmethod
     def From_dict(id:str, data:dict) -> Resource:
@@ -15,7 +16,8 @@ class Resource:
         return Resource(
             id=id,
             name=data["name"],
-            exclusive=tuple(data.get("exclusiveWith", ()))
+            exclusive=tuple(data.get("exclusiveWith", ())),
+            operation_suffix=data.get("operation_suffix", "")
         )
 
 
