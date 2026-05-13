@@ -3,14 +3,15 @@
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from .Operation import Operation, OperationData, Resource
+from .Operation import Operation, OperationData
+import core
 
 @dataclass
 class Solution:
     operations: dict[Operation, OperationData] = field(default_factory=dict)
 
     @staticmethod
-    def From_sol(path: Path) -> Solution:
+    def From_sol(path: Path, resources: core.ResourceRegistry) -> Solution:
 
         def set_start_time(data: OperationData, value:float):
             data.start_time = value
@@ -62,7 +63,7 @@ class Solution:
                 job = job[job.find('_')+1:]
                 operation = operation[operation.find('_')+1:]
 
-                resource = Resource.From_str(resource)
+                resource = resources.get_from_acronym(resource)
 
                 # extract the variable name "Sijk", "Cijk" or "Xijk"
                 variable_name = variable[0:a]
@@ -87,19 +88,35 @@ class Solution:
             }
 
             # This functions checks if the operation is already handled by a collaborative operation
-            def is_handled_by_collaborative(op: Operation):
-                collaborative_variant = Operation(
-                    job = op.job,
-                    operation = op.operation,
-                    resource = Resource.COLLABORATIVE
-                )
+            def is_exlusive_or_not_by_exclusive(op: Operation):
+                if len(op.resource.exclusive) > 0:
+                    return True
 
-                return collaborative_variant in solution
+                candidates = []
+                for r in resources.resources.values():
+
+                    # Skip non exclusive resources
+                    if not op.resource.id in r.exclusive:
+                        continue
+
+                    candidates.append(r)
+
+                for r in candidates:
+                    collaborative_variant = Operation(
+                        job = op.job,
+                        operation = op.operation,
+                        resource = r
+                    )
+
+                    if collaborative_variant in solution:
+                        return False
+                    
+                return True
 
             solution = {
                 op: data
                 for op, data in solution.items()
-                if op.resource == Resource.COLLABORATIVE or not is_handled_by_collaborative(op)
+                if is_exlusive_or_not_by_exclusive(op)
             }
 
             return Solution(

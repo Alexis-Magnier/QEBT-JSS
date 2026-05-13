@@ -31,11 +31,15 @@ def main():
     import converter
     import dispatcher
 
-    solution = converter.Solution.From_sol(TEST_PROJECT_ROOT / "data/solution.sol")
+    with open(TEST_PROJECT_ROOT / "data/resources.json") as file:
+        resources = ResourceRegistry.From_dict(json.load(file)["resources"])
+
+    solution = converter.Solution.From_sol(TEST_PROJECT_ROOT / "data/solution.sol", resources)
     
     print(solution.to_dict())
     for op, data in solution.operations.items():
         print(op, data)
+        
 
     d = dispatcher.Dispatcher.From_solution(solution)
 

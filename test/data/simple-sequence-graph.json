@@ -7,9 +7,6 @@
         "id": 0,
         "name": "Extract cover",
         "requires": [],
-        "effect": {
-          "remove": ["Cover"]
-        },
         "tasks": [
           {
             "id": 0,

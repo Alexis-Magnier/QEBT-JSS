@@ -4,15 +4,13 @@
 import converter
 
 class Dispatcher:
+    operation: list[tuple]
 
     @staticmethod
     def From_solution(sol:converter.Solution) -> Dispatcher:
-        
-        for op in sol.operations.keys():
-            suffix = "_CO" if op.resource == converter.Resource.COLLABORATIVE else ""
+        operations = list[tuple]()
 
-            op_name = f"OP_{op.job}{op.operation}{suffix}"
-            print(op_name)
+        print(operations)
 
     def generate_domain_pddl(self):
         pass

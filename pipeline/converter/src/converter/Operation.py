@@ -3,27 +3,7 @@
 
 from dataclasses import dataclass
 from typing import Any
-from enum import Enum
-
-class Resource(Enum):
-    NONE = 0
-    HUMAN = 1
-    ROBOT = 2
-    COLLABORATIVE = 3
-
-    @staticmethod
-    def From_str(data:str) -> Operation:
-        match data.lower():
-            case "h": return Resource.HUMAN
-            case "r": return Resource.ROBOT
-            case "co": return Resource.COLLABORATIVE
-        raise ValueError(f"Unknown resource type : {data}")
-    
-    def to_str(self) -> str:
-        match self:
-            case Resource.HUMAN: return "H"
-            case Resource.ROBOT: return "R"
-            case Resource.COLLABORATIVE: return "Co"
+import core
 
 # the frozen parameters makes the class immutable after initialisation.
 # Usefull for hashing for dictionnaries
@@ -31,19 +11,19 @@ class Resource(Enum):
 class Operation:
     job: Any
     operation: Any
-    resource: Resource
+    resource: core.Resource
 
     @staticmethod
-    def From_string(data:str) -> Operation:
+    def From_string(data:str, resourceRegistry:core.ResourceRegistry) -> Operation:
         job, operation, resource = data.split(',')
         return Operation(
             job = job,
             operation = operation,
-            resource = Resource(resource)
+            resource = resourceRegistry.resources[int(resource)]
         )
 
     def to_string(self) -> Operation:
-        return f"{self.job},{self.operation},{self.resource.to_str()}"
+        return f"{self.job},{self.operation},{self.resource.id}"
 
 @dataclass
 class OperationData:

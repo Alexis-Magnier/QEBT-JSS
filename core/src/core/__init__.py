@@ -8,3 +8,4 @@ from .Task import Task
 from .Job import Job
 from .Sequence import Sequence
 from .Context import Context
+from .Resource import Resource, ResourceRegistry
