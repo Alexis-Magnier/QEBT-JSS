@@ -75,51 +75,6 @@ def main():
 
     #print(result)
 
-
-def a():
-    import yaml
-    from .main import TEST_PROJECT_ROOT
-
-    with open(TEST_PROJECT_ROOT / "data/mitsubishi-precedence-map.yaml") as stream:
-        data = yaml.safe_load(stream)
-
-    name = data["name"]
-    version = data["version"]
-
-    jobs = dict()
-    for j in data["components"]:
-        jobs[j["name"]] = {
-            "name": j["name"],
-            "id": j["id"],
-            "requires": j["requires"]
-        }
-    
-    for j in jobs.values():
-        r = [jobs[req]["id"] for req in j["requires"]]
-        j["requires"] = r
-    
-    jobs = {
-        j["id"]: {
-            "name": j["name"],
-            "requires": j["requires"],
-            "tasks": []
-        }
-        for j in jobs.values()
-    }
-
-    data = {
-        "precedence-map": {
-            "name": name,
-            "version": version,
-            "jobs": jobs
-        }
-    }
-
-    print(data)
-
-    with open('data.json', 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-
 def temp():
     def load_sequenceGraph(path:Path) -> SequenceGraph:
         with open(path, "r") as file:
