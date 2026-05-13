@@ -1,0 +1,376 @@
+{
+  "precedence-map": {
+    "name": "Mitsubishi",
+    "version": 1,
+    "jobs": {
+      "0": {
+        "name": "A",
+        "requires": [],
+        "tasks": []
+      },
+      "1": {
+        "name": "1",
+        "requires": [
+          0
+        ],
+        "tasks": []
+      },
+      "2": {
+        "name": "B",
+        "requires": [
+          1
+        ],
+        "tasks": []
+      },
+      "3": {
+        "name": "2",
+        "requires": [
+          2
+        ],
+        "tasks": []
+      },
+      "4": {
+        "name": "C",
+        "requires": [
+          1
+        ],
+        "tasks": []
+      },
+      "5": {
+        "name": "3",
+        "requires": [
+          4
+        ],
+        "tasks": []
+      },
+      "6": {
+        "name": "D",
+        "requires": [
+          5
+        ],
+        "tasks": []
+      },
+      "7": {
+        "name": "4",
+        "requires": [
+          6
+        ],
+        "tasks": []
+      },
+      "8": {
+        "name": "D2",
+        "requires": [
+          7
+        ],
+        "tasks": []
+      },
+      "9": {
+        "name": "6",
+        "requires": [
+          8
+        ],
+        "tasks": []
+      },
+      "10": {
+        "name": "E",
+        "requires": [
+          9,
+          9
+        ],
+        "tasks": []
+      },
+      "11": {
+        "name": "7",
+        "requires": [
+          10
+        ],
+        "tasks": []
+      },
+      "12": {
+        "name": "8",
+        "requires": [
+          10
+        ],
+        "tasks": []
+      },
+      "13": {
+        "name": "9",
+        "requires": [
+          10
+        ],
+        "tasks": []
+      },
+      "14": {
+        "name": "10",
+        "requires": [
+          10
+        ],
+        "tasks": []
+      },
+      "15": {
+        "name": "F",
+        "requires": [
+          11,
+          12,
+          13,
+          14
+        ],
+        "tasks": []
+      },
+      "16": {
+        "name": "G",
+        "requires": [
+          15
+        ],
+        "tasks": []
+      },
+      "17": {
+        "name": "11",
+        "requires": [
+          16
+        ],
+        "tasks": []
+      },
+      "19": {
+        "name": "H",
+        "requires": [
+          17
+        ],
+        "tasks": []
+      },
+      "20": {
+        "name": "12",
+        "requires": [
+          19
+        ],
+        "tasks": []
+      },
+      "21": {
+        "name": "I",
+        "requires": [
+          20
+        ],
+        "tasks": []
+      },
+      "22": {
+        "name": "13",
+        "requires": [
+          21
+        ],
+        "tasks": []
+      },
+      "23": {
+        "name": "J",
+        "requires": [
+          22
+        ],
+        "tasks": []
+      },
+      "24": {
+        "name": "14",
+        "requires": [
+          23
+        ],
+        "tasks": []
+      },
+      "25": {
+        "name": "K",
+        "requires": [
+          24
+        ],
+        "tasks": []
+      },
+      "26": {
+        "name": "15",
+        "requires": [
+          25
+        ],
+        "tasks": []
+      },
+      "27": {
+        "name": "L",
+        "requires": [
+          26
+        ],
+        "tasks": []
+      },
+      "28": {
+        "name": "M",
+        "requires": [
+          26
+        ],
+        "tasks": []
+      },
+      "38": {
+        "name": "17",
+        "requires": [
+          26
+        ],
+        "tasks": []
+      },
+      "29": {
+        "name": "16",
+        "requires": [
+          28
+        ],
+        "tasks": []
+      },
+      "30": {
+        "name": "18",
+        "requires": [
+          29
+        ],
+        "tasks": []
+      },
+      "31": {
+        "name": "N",
+        "requires": [
+          30
+        ],
+        "tasks": []
+      },
+      "33": {
+        "name": "19",
+        "requires": [
+          31
+        ],
+        "tasks": []
+      },
+      "34": {
+        "name": "20",
+        "requires": [
+          33
+        ],
+        "tasks": []
+      },
+      "39": {
+        "name": "29",
+        "requires": [
+          38
+        ],
+        "tasks": []
+      },
+      "40": {
+        "name": "T",
+        "requires": [
+          39
+        ],
+        "tasks": []
+      },
+      "41": {
+        "name": "30",
+        "requires": [
+          40
+        ],
+        "tasks": []
+      },
+      "42": {
+        "name": "31",
+        "requires": [
+          41
+        ],
+        "tasks": []
+      },
+      "35": {
+        "name": "21",
+        "requires": [
+          34,
+          42
+        ],
+        "tasks": []
+      },
+      "36": {
+        "name": "22",
+        "requires": [
+          35
+        ],
+        "tasks": []
+      },
+      "37": {
+        "name": "23",
+        "requires": [
+          36
+        ],
+        "tasks": []
+      },
+      "43": {
+        "name": "O",
+        "requires": [
+          29,
+          38
+        ],
+        "tasks": []
+      },
+      "44": {
+        "name": "24",
+        "requires": [
+          43
+        ],
+        "tasks": []
+      },
+      "45": {
+        "name": "P",
+        "requires": [
+          44
+        ],
+        "tasks": []
+      },
+      "46": {
+        "name": "25",
+        "requires": [
+          45
+        ],
+        "tasks": []
+      },
+      "47": {
+        "name": "Q",
+        "requires": [
+          46
+        ],
+        "tasks": []
+      },
+      "48": {
+        "name": "26",
+        "requires": [
+          47
+        ],
+        "tasks": []
+      },
+      "49": {
+        "name": "R",
+        "requires": [
+          48
+        ],
+        "tasks": []
+      },
+      "50": {
+        "name": "27",
+        "requires": [
+          49
+        ],
+        "tasks": []
+      },
+      "51": {
+        "name": "S",
+        "requires": [
+          50
+        ],
+        "tasks": []
+      },
+      "52": {
+        "name": "28",
+        "requires": [
+          51
+        ],
+        "tasks": []
+      },
+      "53": {
+        "name": "32",
+        "requires": [
+          52
+        ],
+        "tasks": []
+      }
+    }
+  }
+}

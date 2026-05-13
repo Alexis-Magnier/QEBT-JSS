@@ -20,7 +20,7 @@ class Job:
     
     
     @staticmethod
-    def From_dict(data: dict) -> Job:
+    def From_dict(id:int, data: dict) -> Job:
         """ Creates a job from a dictionary
         """
 
@@ -30,8 +30,8 @@ class Job:
         ]
 
         return Job(
-            id=data["id"],
+            id=id,
             name=data.get("name", ""),
-            requires=data.get("requires", []),
+            requirments=data.get("requires", []),
             tasks=tasks,
         )

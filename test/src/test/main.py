@@ -13,18 +13,42 @@ TEST_PROJECT_ROOT = Path(__file__).resolve().parents[2]
 def render_graph(states, transitions):
     import networkx as nx
     import matplotlib.pyplot as plt
+    from pyvis.network import Network
+
 
     G = nx.DiGraph()
-    for source, actions in transitions.items():
-        for action, targets in actions.items():
-            for target, prob in targets.items():
-                G.add_edge(source, target, label=f"{action}\n{prob}")
+
+    for state in states:
+        G.add_node(state, label=str(state))
+
+    for source, target, arc in transitions:
+        G.add_edge(source, target, label=arc)
     
-    pos = nx.spring_layout(G)
-    nx.draw(G, pos, with_labels=True, node_size=1000, font_size=10)
-    edge_labels = nx.get_edge_attributes(G, 'label')
-    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
-    plt.show()
+
+    net = Network(notebook=False, directed=True)
+    net.from_nx(G)
+
+    net.set_options("""
+{
+  "layout": {
+    "hierarchical": {
+      "enabled": true,
+      "direction": "UD",
+      "sortMethod": "directed"
+    }
+  }
+}
+""")
+    
+    net.show("graph.html", notebook=False)
+
+
+    # plt.ion()
+    # pos = nx.spring_layout(G)
+    # nx.draw(G, pos, with_labels=True, node_size=1000, font_size=10)
+    # edge_labels = nx.get_edge_attributes(G, 'label')
+    # nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
+    # plt.show()
     
 def main():
     print(TEST_PROJECT_ROOT)
@@ -49,7 +73,52 @@ def main():
 
     result = d.generate_domain_pddl(TEST_PROJECT_ROOT / "data/templates/", "domain.pddl.j2")
 
-    print(result)
+    #print(result)
+
+
+def a():
+    import yaml
+    from .main import TEST_PROJECT_ROOT
+
+    with open(TEST_PROJECT_ROOT / "data/mitsubishi-precedence-map.yaml") as stream:
+        data = yaml.safe_load(stream)
+
+    name = data["name"]
+    version = data["version"]
+
+    jobs = dict()
+    for j in data["components"]:
+        jobs[j["name"]] = {
+            "name": j["name"],
+            "id": j["id"],
+            "requires": j["requires"]
+        }
+    
+    for j in jobs.values():
+        r = [jobs[req]["id"] for req in j["requires"]]
+        j["requires"] = r
+    
+    jobs = {
+        j["id"]: {
+            "name": j["name"],
+            "requires": j["requires"],
+            "tasks": []
+        }
+        for j in jobs.values()
+    }
+
+    data = {
+        "precedence-map": {
+            "name": name,
+            "version": version,
+            "jobs": jobs
+        }
+    }
+
+    print(data)
+
+    with open('data.json', 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
 
 def temp():
     def load_sequenceGraph(path:Path) -> SequenceGraph:
@@ -74,44 +143,72 @@ def temp():
         
         return policies
 
-    p = load_sequenceGraph(TEST_PROJECT_ROOT / "data/simple-sequence-graph.json")
+    p = load_sequenceGraph(TEST_PROJECT_ROOT / "data/data.json")
     policies = load_policies(TEST_PROJECT_ROOT / "data/disassembly-policy-table.json")
 
-    queue = deque[Job]()
-    visited = set[Job]()
 
-    for sequence in p.sequences.values():
-        if len(sequence.previous) == 0:
-            queue.append(sequence.start)
-
-    states = ['S0', 'S1']
-    transitions = {
-        'S0': {'stay': {'S0': 0.9, 'S1': 0.1}, 'move': {'S1': 1.0}}
+    states: dict[dict] = {
+        frozenset(): {
+            "id": 0,
+            "jobs": {
+                s.start for s in p.sequences.values()
+                if len(s.previous) == 0
+            },
+            "children": []
+        }
     }
 
-    while len(queue) != 0:
-        current = queue.pop()
+    # (state, job)
+    queue = deque[int]([i for i in states.keys()])
+    visited = set()
 
-        if not set(current.previous) <= visited:
-            continue 
-        
-        states.append(current.id)
-        visited.add(current)
-        print("job %d : %s" % (current.id, current.name))
+    i=1
+    while queue:
+        done = frozenset(queue.pop())
 
-        for task in current.tasks:
-            r = policies.query(task.query)
+        if done in visited:
+            continue
+        visited.add(done)
 
-            if len(r.result) == 0:
-                print("no policy found for ", task.query)
+        current = states[done]
+
+        for job in current["jobs"]:
+
+            previous = set([j.id for j in job.previous])
+
+            # if the jobs are
+            if not previous <= done:
                 continue
+                
+            new_done = done | {job.id}
 
-            policy, score = r.result[0]
-            print("\t- %s : %s (similarity: %0.2f)" % (task.name, policy.name, score))
+            if new_done not in states:
+                next_jobs = (current["jobs"] - {job}) | set(job.next)
 
-        queue.extend(current.next)
+                i+=1
+                
+                states[new_done] = {
+                    "id": i,
+                    "jobs": next_jobs,
+                    "children": []
+                }
 
-    
-    # Example structure
-    
-    render_graph(states, transitions) # Run this to visualize
+
+                queue.append(new_done)
+            
+            current["children"].append((job, new_done))
+
+    render_states = [s["id"] for s in states.values()]
+    transitions = []
+
+    for state in states.values():
+
+        for job, j in state["children"]:
+            next = states.get(j, None)
+            if not next: continue
+            transitions.append((state["id"], next["id"], job.name))
+
+    for t in transitions:
+        print(t)
+
+    render_graph(render_states, transitions)

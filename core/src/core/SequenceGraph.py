@@ -64,7 +64,7 @@ class SequenceGraph:
     def compute_job_links(self) -> None:
         for job in self.jobs.values():
             job.previous = list(map(
-                lambda n : self.jobs[n], job.requires
+                lambda n : self.jobs[n], job.requirments
             ))
 
             for p in job.previous:
@@ -121,12 +121,12 @@ class SequenceGraph:
     @staticmethod
     def From_dict(data: dict) -> SequenceGraph:
         jobs = {
-            j["id"]: Job.From_dict(j)
-            for j in data.get("jobs", [])
+            int(id): Job.From_dict(int(id), data)
+            for id, data in data.get("jobs", dict()).items()
         }
 
         return SequenceGraph(
             id = data.get("id"),
             name = data.get("name", ""),
-            jobs=jobs,
+            jobs=jobs
         )

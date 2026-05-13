@@ -10,7 +10,7 @@
             "Co": {
                 "name": "Collaborative",
                 "operation_suffix": "_CO",
-                "exclusiveWith": [0, 1]
+                "exclusiveWith": ["H", "R"]
             }
         }
     }

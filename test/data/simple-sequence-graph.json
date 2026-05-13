@@ -219,36 +219,6 @@
             }
           }
         ]
-      },
-      {
-        "id": 5,
-        "name": "test",
-        "requires": [],
-        "tasks": [
-          {
-            "id": 0,
-            "name": "Extract cell",
-            "requires": [],
-            "props": {
-              "fails": 2
-            },
-            "query": {
-              "domains": [
-                "ComponentExtraction"
-              ],
-              "descriptors": {
-                "component.width": 0.4,
-                "component.depth": 0.4,
-                "component.material.toughness": 0.1,
-                "component.material.rigidity": 0.8,
-                "component.accessibility": 0.8,
-                "component.fracture_risk": 0.6,
-                "component.flexibility": 0.0,
-                "component.thermal_sensitivity": 0.9
-              }
-            }
-          }
-        ]
       }
     ]
   }
