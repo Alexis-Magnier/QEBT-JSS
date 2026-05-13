@@ -7,37 +7,30 @@ from dataclasses import dataclass, field
 class Resource:
     id: int
     name: str
-    acronym: str
     exclusive: tuple[str]
 
     @staticmethod
-    def From_dict(id:int, data:dict) -> Resource:
-        name = data["name"]
+    def From_dict(id:str, data:dict) -> Resource:
 
         return Resource(
             id=id,
-            name=name,
-            acronym=data.get("acronym", name[0]),
+            name=data["name"],
             exclusive=tuple(data.get("exclusiveWith", ()))
         )
 
 
 @dataclass
 class ResourceRegistry:
-    resources: dict[int, Resource] = field(default_factory=dict)
+    resources: dict[str, Resource] = field(default_factory=dict)
 
-    def get_from_acronym(self, acronym:str) -> Resource:
-        try:
-            return next(n for n in self.resources.values() if n.acronym == acronym)
-        except StopIteration as e:
-            raise IndexError(f"No resource acronym is \"{acronym}\"")
-
+    def get(self, id:str) -> Resource:
+        return self.resources[id]
 
     @staticmethod
     def From_dict(data:dict) -> ResourceRegistry:
         return ResourceRegistry(
             resources = {
-                int(id): Resource.From_dict(int(id), d)
+                id: Resource.From_dict(id, d)
                 for id, d in data["resources"].items()
             }
         )

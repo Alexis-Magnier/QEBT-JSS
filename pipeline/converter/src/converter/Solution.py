@@ -63,7 +63,7 @@ class Solution:
                 job = job[job.find('_')+1:]
                 operation = operation[operation.find('_')+1:]
 
-                resource = resources.get_from_acronym(resource)
+                resource = resources.get(resource)
 
                 # extract the variable name "Sijk", "Cijk" or "Xijk"
                 variable_name = variable[0:a]

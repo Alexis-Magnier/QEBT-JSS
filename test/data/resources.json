@@ -1,17 +1,14 @@
 {
     "resources": {
         "resources": {
-            "0": {
-                "name": "Human",
-                "acronym": "H"
+            "H": {
+                "name": "Human"
             },
-            "1": {
-                "name": "Robot",
-                "acronym": "R"
+            "R": {
+                "name": "Robot"
             },
-            "2": {
+            "Co": {
                 "name": "Collaborative",
-                "acronym": "Co",
                 "exclusiveWith": [0, 1]
             }
         }
