@@ -17,7 +17,7 @@ class Solution:
             data.start_time = value
 
         def set_end_time(data: OperationData, value:float):
-            data.end_time = value - 1
+            data.end_time = value - 1 #! -1 used to force the creation of wait operations. Should be removed for proper tests
 
         def set_active(data: OperationData, value:float):
             data.active = value > 0.5

@@ -44,6 +44,13 @@ def main():
         resource_filter=[resources.get("H")]
     )
 
+    for op in d.operations:
+        print(op)
+
+    result = d.generate_domain_pddl(TEST_PROJECT_ROOT / "data/templates/", "domain.pddl.j2")
+
+    print(result)
+
 def temp():
     def load_sequenceGraph(path:Path) -> SequenceGraph:
         with open(path, "r") as file:

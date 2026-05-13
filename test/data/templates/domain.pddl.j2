@@ -1,0 +1,41 @@
+(define (domain specific_plan)
+    (:requirments :strip :typing)
+    (:types agent tool location operation)
+    (:predicates
+        (at ?a - agent ?l - location)
+        (move_to_workstation_done ?a - agent)
+        (move_to_done ?a - agent)
+        (holding ?a - agent ?t - tool)
+        (tool_at ?t - tool ?l - location)
+        (can_operate ?t - tool ?op - operation)
+        (wait_done ?a - agent)
+        (pick_done ?a - agent)
+        (place_done ?a - agent)
+        {% for op in operations %}
+            (pick_{{ op|lower }}_done)
+            (place_{{ op|lower }}_done)
+        {% endfor %}
+    )
+
+    ;; Action Générique de Déplacement
+    (:action move_to
+        :parameters (?a - agent ?from - location ?to - location)
+        :precondition (at ?a ?from)
+        :effect (and
+            (at ?a ?to)
+            (not (at ?a ?from))
+            (move_to_done ?a)
+        )
+    )
+
+    ;; Action Spécifique de Déplacement vers la Station de Travail
+    (:action move_to_workstation
+        :parameters (?a - agent ?from - location ?to - location)
+        :precondition (at ?a ?from)
+        :effect (and
+            (at ?a ?to)
+            (not (at ?a ?from))
+            (move_to_workstation_done ?a)
+        )
+    )
+)

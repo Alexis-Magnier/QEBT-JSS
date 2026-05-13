@@ -1,18 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from dataclasses import dataclass, field
+from typing import ClassVar, TextIO
+import jinja2
 import converter
 
+@dataclass
 class Dispatcher:
-    operation: list[tuple]
+    WAIT_OPERATION_NAME: ClassVar[str] = "wait"
+
+    operation_type = tuple[str, converter.Operation, converter.OperationData]
+    operations: list[operation_type] = field(default_factory=list)
 
     @staticmethod
     def _Generate_operations_from_sol(
             sol:converter.Solution,
             resource_filter:list[str] = []
-        ) -> list[tuple[str, converter.Operation, converter.OperationData]]:
+        ) -> list[operation_type]:
 
-        operations = list[tuple[str, converter.Operation, converter.OperationData]]()
+        operations = list[Dispatcher.operation_type]()
 
         for op, data in sol.operations.items():
 
@@ -36,7 +43,7 @@ class Dispatcher:
 
             if previous_end_time is not None and data.start_time > previous_end_time:
                 operations.insert(i, (
-                    f"wait", op, converter.OperationData(
+                    Dispatcher.WAIT_OPERATION_NAME, op, converter.OperationData(
                         start_time=previous_end_time,
                         end_time=data.start_time,
                         active=False
@@ -52,15 +59,28 @@ class Dispatcher:
             sol:converter.Solution,
             resource_filter:list[str] = []
         ) -> Dispatcher:
-        
-        operations = Dispatcher._Generate_operations_from_sol(sol, resource_filter)
 
-        for op in operations:
-            print(op)
+        operations = Dispatcher._Generate_operations_from_sol(sol, resource_filter)
+        
+        if not operations:
+            raise ValueError("No operations !")
+        
+        return Dispatcher(
+            operations = operations
+        )
                     
 
-    def generate_domain_pddl(self):
-        pass
+    def generate_domain_pddl(self, folder:str, file:str) -> str:
+        env = jinja2.Environment(
+            loader=jinja2.FileSystemLoader(folder)
+        )
 
+        template = env.get_template(file)
+
+        return template.render(
+            operations = {"op1", "op2"}
+        )
+        
+        
     def generate_problem_pddl(self):
         pass

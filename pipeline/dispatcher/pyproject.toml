@@ -4,7 +4,15 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "core",
+    "converter",
+    "Jinja2"
+]
+
+[tool.uv.sources]
+core = {workspace = true}
+converter = {workspace = true}
 
 [build-system]
 requires = ["uv_build>=0.11.11,<0.12"]
