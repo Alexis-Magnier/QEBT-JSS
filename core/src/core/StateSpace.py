@@ -2,14 +2,16 @@
 # -*- coding: utf-8 -*-
 
 from dataclasses import dataclass, field
-from .Job import Job
-from .SequenceGraph import SequenceGraph
+from typing import TypedDict
+
+from .Sequence import Sequence
+from .Sequence import SequenceGraph
 from collections import deque
 
 @dataclass
 class State:
     id: int
-    children: list[tuple[Job, State]] = field(default_factory=list)
+    children: list[tuple[Sequence, State]] = field(default_factory=list)
 
 @dataclass
 class StateSpaceGraph:
@@ -17,56 +19,63 @@ class StateSpaceGraph:
 
     @staticmethod
     def From_SequenceGraph(graph: SequenceGraph) -> StateSpaceGraph:
-        states: dict[frozenset, dict] = {
+        class StateData(TypedDict):
+            id: int
+            sequences: list[Sequence]
+            children: tuple[Sequence, frozenset]
+        
+
+        states: dict[frozenset, StateData] = {
             frozenset(): {
                 "id": 0,
-                "jobs": {
-                    s.start for s in graph.sequences.values()
+                "sequences": {
+                    s for s in graph.sequences.values()
                     if len(s.previous) == 0
                 },
                 "children": []
             }
         }
 
-        # (state, job)
-        queue = deque[int]([i for i in states.keys()])
+        queue = deque[frozenset]([i for i in states.keys()])
         visited = set()
 
         i=1
         while queue:
             done = frozenset(queue.pop())
 
+            # Skip visited entries
             if done in visited:
                 continue
             visited.add(done)
 
+            # query current state data
             current = states[done]
 
-            for job in current["jobs"]:
+            for sequence in current["sequences"]:
 
-                previous = set([j.id for j in job.previous])
+                previous = set([s.id for s in sequence.previous])
 
-                # if the jobs are
+                # if the sequence prerequisits are not met. We skip it
                 if not previous <= done:
                     continue
                     
-                new_done = done | {job.id}
+                new_done = done | {sequence.id}
 
                 if new_done not in states:
-                    next_jobs = (current["jobs"] - {job}) | set(job.next)
+                    next_sequences = (current["sequences"] - {sequence}) | set(sequence.next)
 
                     i+=1
                     
                     states[new_done] = {
                         "id": i,
-                        "jobs": next_jobs,
+                        "sequences": next_sequences,
                         "children": []
                     }
 
 
                     queue.append(new_done)
                 
-                current["children"].append((job, new_done))
+                current["children"].append((sequence, new_done))
         
         states2: dict[int, State] = {
             s["id"]: State(
@@ -80,8 +89,8 @@ class StateSpaceGraph:
             state = states2[id]
 
             children = [
-                (job, states2[next["id"]])
-                for job, done in s["children"]
+                (sequence, states2[next["id"]])
+                for sequence, done in s["children"]
                 if (next := states.get(done, None)) is not None
             ]
 

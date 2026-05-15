@@ -108,3 +108,5 @@ def temp():
     
     print(len(transitions))
     print(len(render_states))
+
+    render_graph(render_states, transitions)

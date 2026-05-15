@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from .Task import Task
 from .types import *
 
-@dataclass(eq=False)
+@dataclass
 class Job:
     # Serialisable data
     id: JobID = INVALID_JOB_ID
@@ -35,3 +35,6 @@ class Job:
             requirments=data.get("requires", []),
             tasks=tasks,
         )
+
+    def __hash__(self):
+        return self.id
