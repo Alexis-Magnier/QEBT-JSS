@@ -10,7 +10,8 @@ dependencies = [
     "matplotlib",
     "converter",
     "pyvis",
-    "pyyaml"
+    "pyyaml",
+    "pydot"
 ]
 
 [project.scripts]

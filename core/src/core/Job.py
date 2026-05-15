@@ -10,6 +10,7 @@ class Job:
     # Serialisable data
     id: JobID = INVALID_JOB_ID
     name: str = ""
+    probability: float = 1.0
     requirments: list[JobID] = field(default_factory=list)
 
     # runtime
@@ -33,6 +34,7 @@ class Job:
             id=id,
             name=data.get("name", ""),
             requirments=data.get("requires", []),
+            probability=data.get("probability", 1.0),
             tasks=tasks,
         )
 

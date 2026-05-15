@@ -10,21 +10,29 @@ from core import *
 from pathlib import Path
 TEST_PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-def render_graph(states, transitions):
+def render_graph(states:list[State], transitions):
     import networkx as nx
-    import matplotlib.pyplot as plt
     from pyvis.network import Network
+    import networkx as nx
+    import matplotlib as mpl
+    import matplotlib.colors
+
+    cmap = mpl.colormaps['Reds']
+
 
 
     G = nx.DiGraph()
 
     for state in states:
-        G.add_node(state, label=str(state))
+        id = state.id 
+        print(id, state.probability)
+        color = cmap(state.probability)
+
+        G.add_node(id, label="%0.2f" % state.probability, color=matplotlib.colors.rgb2hex(color))
 
     for source, target, arc in transitions:
         G.add_edge(source, target, label=arc)
     
-
     net = Network(notebook=False, directed=True)
     net.from_nx(G)
 
@@ -42,9 +50,7 @@ def render_graph(states, transitions):
     
     net.show("graph.html", notebook=False)
 
-    
 def main():
-    print(TEST_PROJECT_ROOT)
     import converter
     import dispatcher
 
@@ -82,6 +88,8 @@ def temp():
             raise Exception("the jobs must be acyclic")
 
         p.group()
+        p.update_probabilities()
+
         return p
 
 
@@ -95,8 +103,11 @@ def temp():
     policies = load_policies(TEST_PROJECT_ROOT / "data/disassembly-policy-table.json")
 
     stateSpace = StateSpaceGraph.From_SequenceGraph(p)
+    stateSpace.update_probabilities()
 
-    render_states = [s for s in stateSpace.states.keys()]
+    print(stateSpace.to_dict())
+
+    render_states = [s for s in stateSpace.states.values()]
     transitions = []
 
     for id, s in stateSpace.states.items():

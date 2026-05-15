@@ -6,70 +6,80 @@
       "0": {
         "name": "A",
         "requires": [],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "1": {
         "name": "1",
         "requires": [
           0
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "2": {
         "name": "B",
         "requires": [
           1
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "3": {
         "name": "2",
         "requires": [
           2
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "4": {
         "name": "C",
         "requires": [
           1
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "5": {
         "name": "3",
         "requires": [
           4
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "6": {
         "name": "D",
         "requires": [
           5
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "7": {
         "name": "4",
         "requires": [
           6
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "8": {
         "name": "D2",
         "requires": [
           7
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "9": {
         "name": "6",
         "requires": [
           8
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "10": {
         "name": "E",
@@ -77,35 +87,40 @@
           9,
           9
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "11": {
         "name": "7",
         "requires": [
           10
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "12": {
         "name": "8",
         "requires": [
           10
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "13": {
         "name": "9",
         "requires": [
           10
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "14": {
         "name": "10",
         "requires": [
           10
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "15": {
         "name": "F",
@@ -115,161 +130,184 @@
           13,
           14
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "16": {
         "name": "G",
         "requires": [
           15
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "17": {
         "name": "11",
         "requires": [
           16
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "19": {
         "name": "H",
         "requires": [
           17
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "20": {
         "name": "12",
         "requires": [
           19
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "21": {
         "name": "I",
         "requires": [
           20
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "22": {
         "name": "13",
         "requires": [
           21
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "23": {
         "name": "J",
         "requires": [
           22
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "24": {
         "name": "14",
         "requires": [
           23
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "25": {
         "name": "K",
         "requires": [
           24
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "26": {
         "name": "15",
         "requires": [
           25
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "27": {
         "name": "L",
         "requires": [
           26
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "28": {
         "name": "M",
         "requires": [
           26
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "38": {
         "name": "17",
         "requires": [
           26
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "29": {
         "name": "16",
         "requires": [
           28
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "30": {
         "name": "18",
         "requires": [
           29
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "31": {
         "name": "N",
         "requires": [
           30
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "33": {
         "name": "19",
         "requires": [
           31
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "34": {
         "name": "20",
         "requires": [
           33
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "39": {
         "name": "29",
         "requires": [
           38
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "40": {
         "name": "T",
         "requires": [
           39
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "41": {
         "name": "30",
         "requires": [
           40
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "42": {
         "name": "31",
         "requires": [
           41
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "35": {
         "name": "21",
@@ -277,21 +315,24 @@
           34,
           42
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "36": {
         "name": "22",
         "requires": [
           35
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "37": {
         "name": "23",
         "requires": [
           36
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "43": {
         "name": "O",
@@ -299,77 +340,88 @@
           29,
           38
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "44": {
         "name": "24",
         "requires": [
           43
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "45": {
         "name": "P",
         "requires": [
           44
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "46": {
         "name": "25",
         "requires": [
           45
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "47": {
         "name": "Q",
         "requires": [
           46
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "48": {
         "name": "26",
         "requires": [
           47
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "49": {
         "name": "R",
         "requires": [
           48
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "50": {
         "name": "27",
         "requires": [
           49
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "51": {
         "name": "S",
         "requires": [
           50
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "52": {
         "name": "28",
         "requires": [
           51
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       },
       "53": {
         "name": "32",
         "requires": [
           52
         ],
-        "tasks": []
+        "tasks": [],
+        "probability": 0.994
       }
     }
   }

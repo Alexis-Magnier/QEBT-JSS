@@ -20,6 +20,12 @@ class Sequence:
 
     previous: list[Sequence] = field(default_factory=list)
     next: list[Sequence] = field(default_factory=list)
+    probability: float = 1.0
+
+    def update_probability(self):
+        self.probability = 1.0
+        for j in self.jobs:
+            self.probability *= j.probability
 
     def __hash__(self):
         return self.id
@@ -89,7 +95,7 @@ class SequenceGraph:
 
     def job_groups(self) -> None:
         for job in self.jobs.values():
-            job.sequence = Sequence(
+            s = Sequence(
                 id=job.id,
                 name=job.name,
                 jobs=[job],
@@ -98,6 +104,9 @@ class SequenceGraph:
                 previous=[],
                 next=[]
             )
+
+            job.sequence = s
+            self.sequences[job.id] = s
         
         for job in self.jobs.values():
             sequence = job.sequence
@@ -160,6 +169,10 @@ class SequenceGraph:
 
             for next in s.next:
                 next.previous.append(s)
+    
+    def update_probabilities(self):
+        for s in self.sequences.values():
+            s.update_probability()
 
 
     @staticmethod

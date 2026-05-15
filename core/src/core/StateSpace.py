@@ -12,10 +12,67 @@ from collections import deque
 class State:
     id: int
     children: list[tuple[Sequence, State]] = field(default_factory=list)
+    parents: list[tuple[Sequence, State]] = field(default_factory=list)
+    probability: float = 1.0
+
+    def to_dict(self) -> dict:
+        return {
+            "children": {
+                state.id: sequence.id
+                for sequence, state in self.children
+            }
+        }
+
+    def __hash__(self):
+        return self.id
 
 @dataclass
 class StateSpaceGraph:
     states: dict[int, State] = field(default_factory=dict)
+
+    def foreach_dfs(self, fn):
+        q = deque[State](
+            [
+                s for s in self.states.values()
+                if len(s.parents) == 0
+
+            ]
+        )
+
+        visited = set[State]()
+
+        while q:
+            current = q.popleft()
+
+            if not set([p[1] for p in current.parents]) <= visited:
+                continue
+
+            if current in visited:
+                continue
+            visited.add(current)
+
+            fn(current)
+
+            q.extend([c[1] for c in current.children])
+
+
+    def update_probabilities(self):
+
+        def update_prob(s:State):
+
+            if len(s.parents) == 0:
+                s.probability = 1
+                return
+            
+            fail = 1.0
+
+            p = 0
+            for sequence, parent in s.parents:
+                p += (parent.probability * sequence.probability) / len(parent.children)
+
+            s.probability = p
+
+        self.foreach_dfs(update_prob)
 
     @staticmethod
     def From_SequenceGraph(graph: SequenceGraph) -> StateSpaceGraph:
@@ -94,8 +151,20 @@ class StateSpaceGraph:
                 if (next := states.get(done, None)) is not None
             ]
 
+            for sequence, s2 in children:
+                s2.parents.append((sequence, state))
+
             state.children = children
 
         return StateSpaceGraph(
             states = states2
         )
+    
+
+    def to_dict(self) -> dict:
+        return {
+            "states": {
+                i: s.to_dict()
+                for i, s in self.states.items()
+            }
+        }
