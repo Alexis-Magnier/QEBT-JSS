@@ -42,13 +42,6 @@ def render_graph(states, transitions):
     
     net.show("graph.html", notebook=False)
 
-
-    # plt.ion()
-    # pos = nx.spring_layout(G)
-    # nx.draw(G, pos, with_labels=True, node_size=1000, font_size=10)
-    # edge_labels = nx.get_edge_attributes(G, 'label')
-    # nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
-    # plt.show()
     
 def main():
     print(TEST_PROJECT_ROOT)
@@ -101,69 +94,17 @@ def temp():
     p = load_sequenceGraph(TEST_PROJECT_ROOT / "data/data.json")
     policies = load_policies(TEST_PROJECT_ROOT / "data/disassembly-policy-table.json")
 
+    stateSpace = StateSpaceGraph.From_SequenceGraph(p)
 
-    states: dict[dict] = {
-        frozenset(): {
-            "id": 0,
-            "jobs": {
-                s.start for s in p.sequences.values()
-                if len(s.previous) == 0
-            },
-            "children": []
-        }
-    }
-
-    # (state, job)
-    queue = deque[int]([i for i in states.keys()])
-    visited = set()
-
-    i=1
-    while queue:
-        done = frozenset(queue.pop())
-
-        if done in visited:
-            continue
-        visited.add(done)
-
-        current = states[done]
-
-        for job in current["jobs"]:
-
-            previous = set([j.id for j in job.previous])
-
-            # if the jobs are
-            if not previous <= done:
-                continue
-                
-            new_done = done | {job.id}
-
-            if new_done not in states:
-                next_jobs = (current["jobs"] - {job}) | set(job.next)
-
-                i+=1
-                
-                states[new_done] = {
-                    "id": i,
-                    "jobs": next_jobs,
-                    "children": []
-                }
-
-
-                queue.append(new_done)
-            
-            current["children"].append((job, new_done))
-
-    render_states = [s["id"] for s in states.values()]
+    render_states = [s for s in stateSpace.states.keys()]
     transitions = []
 
-    for state in states.values():
+    for id, s in stateSpace.states.items():
+        transitions.extend([
+            (id, c[1].id, c[0].name)
+            for c in s.children
+        ])
 
-        for job, j in state["children"]:
-            next = states.get(j, None)
-            if not next: continue
-            transitions.append((state["id"], next["id"], job.name))
-
-    for t in transitions:
-        print(t)
-
-    render_graph(render_states, transitions)
+    
+    print(len(transitions))
+    print(len(render_states))
