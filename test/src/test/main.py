@@ -87,7 +87,7 @@ def temp():
         if not p.is_acyclic():
             raise Exception("the jobs must be acyclic")
 
-        p.group()
+        p.job_groups()
         p.update_probabilities()
 
         return p
@@ -99,7 +99,7 @@ def temp():
         
         return policies
 
-    p = load_sequenceGraph(TEST_PROJECT_ROOT / "data/data.json")
+    p = load_sequenceGraph(TEST_PROJECT_ROOT / "data/simple-sequence-graph.json")
     policies = load_policies(TEST_PROJECT_ROOT / "data/disassembly-policy-table.json")
 
     stateSpace = StateSpaceGraph.From_SequenceGraph(p)
