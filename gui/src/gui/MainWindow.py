@@ -1,13 +1,16 @@
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import Qt
 import sys
+import logging
+import traceback
 
 from .AppContext import AppContext
 from .widgets.StateSpaceNetwork import StateSpaceNetworkWidget
 from .AsyncFileLoader import AsyncFileLoader
+from .widgets.LogDockWidget import LogRenderSystem, LogHandler
 
 from core import (
-    SequenceGraph
+    SequenceGraph, PolicyTable, ResourceRegistry
 )
 
 from PyQt5.QtWidgets import (
@@ -63,16 +66,15 @@ MERMAID_HTML = """
 """
 
 class MainWindow(QMainWindow):
+
+
     def __init__(self, ctx:AppContext):
         super().__init__()
+        logging.getLogger().name = "app"
 
         self.ctx = ctx
         self.setWindowTitle("Dynamic Docking Workspace Engine")
         self.resize(1100, 700)
-
-        self.status_bar = self.statusBar()
-        self.ctx.status_changed.connect(self.status_bar.showMessage)
-        self.status_bar.showMessage(self.ctx.status)
 
         # 1. Enable advanced layout nesting and tabbing behavior
         self.setDockOptions(
@@ -89,6 +91,19 @@ class MainWindow(QMainWindow):
         # 3. Initialize dynamic dock panels
         self.init_dock_panels()
         self.create_menu_bar()
+
+        self.setup_logging_bridge()
+    
+    def setup_logging_bridge(self):
+        # Create the custom handler
+        self.log_handler = LogHandler()
+        self.log_handler.new_log_signal.connect(self.dock_console.log)
+        
+        self.log_handler.setLevel(logging.DEBUG)
+
+        root_logger = logging.getLogger()
+        root_logger.setLevel(logging.DEBUG)
+        root_logger.addHandler(self.log_handler)
     
     def add_panel(self, title:str, initial_pos: Qt.DockWidgetArea) -> QDockWidget:
         d = QDockWidget(title, self)
@@ -117,17 +132,8 @@ class MainWindow(QMainWindow):
         layout.addWidget(QListWidget()) # Mock attributes table list
         dock_inspector.setWidget(inspector_container)
 
-        # --- PANEL C: System Output Console (Initial State: Bottom Side) ---
-        dock_console = QDockWidget("System Log Console", self)
-        dock_console.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable) # Cannot be closed
-        
-        console_widget = QTextEdit()
-        console_widget.setReadOnly(True)
-        console_widget.setText("[INFO] Reactive event loop initialized safely.\n[INFO] Layout boundaries computed.")
-        console_widget.setStyleSheet("background-color: #1e1e1e; color: #00ff00; font-family: Consolas;")
-        dock_console.setWidget(console_widget)
-        
-        self.addDockWidget(Qt.BottomDockWidgetArea, dock_console)
+        self.dock_console = LogRenderSystem(self)
+        self.addDockWidget(Qt.BottomDockWidgetArea, self.dock_console)
 
         # 4. Optional: Force specific panels to stack together as tabs out of the box
         # self.tabifyDockWidget(dock_inspector, dock_editor)
@@ -195,17 +201,17 @@ class MainWindow(QMainWindow):
         loader = self.ctx.loader = AsyncFileLoader(path)
         loader.finished_loading.connect(self.load_file_replace)
 
-        self.ctx.status = f"Loading file \"{path}\"..."
+        logging.info("Loading file \"%s\"" % path)
 
         try:
             loader.start()
         except Exception as e:
+            logging.error("Exception encountered while loading file \"%s\" : %s" % (path, e))
             QMessageBox.warning(
                 self, "Exception encountered", 
                 f"Exception encountered while loading file \"{path}\" : {e}."
             )
 
-            self.ctx.status = f"Failed to load file \"{path}\" with exception {type(e)}"
             return
 
     def extend_file_callback(self):
@@ -213,47 +219,81 @@ class MainWindow(QMainWindow):
         print("Extend !")
 
     def load_file_replace(self, data):
-        self.load_file(data, replace=True)
+        try:
+            self.load_file(data, replace=True)
+        except Exception:
+            logging.error("Exception encountered")
+            QMessageBox.warning(self,
+                "Exception encountered",
+                traceback.format_exc()
+            )
+
 
     def load_file_extend(self, data):
-        self.load_file(data, replace=False)
+        try:
+            self.load_file(data, replace=False)
+        except Exception:
+            logging.exception("Exception encountered")
+            QMessageBox.warning(self,
+                "Exception encountered",
+                traceback.format_exc()
+            )
     
     def load_file(self, data:dict, replace:bool):
+
         
         for node, content in data.items():
             match node:
                 case "precedence-map":
                     precedence_map = self.ctx.sequenceGraph
 
-                    self.ctx.status = f"Loading sequence graph..."
+                    logging.info("Loading sequence graph...")
                     map = SequenceGraph.From_dict(content)
                     
 
-                    self.ctx.status = f"Computing sequence graph job links..."
+                    logging.info("Computing sequence graph job links...")
                     map.compute_job_links()
                     
                     if not map.is_acyclic():
                         return
 
-                    self.ctx.status = f"Grouping sequence graph"
+                    logging.info("Grouping sequence graph...")
                     map.group()
                     map.update_probabilities()
 
-                    precedence_map.value = map
+                    if replace:
+                        precedence_map.value = map
+                    else:
+                        precedence_map.value.extend(map)
 
                 case "policy-base":
-                    print("loading policy table")
+                    logging.info("Loading policy table...")
+                    new_table = PolicyTable.From_dict(content)
+
+                    if replace:
+                        self.ctx.policyTable = new_table
+                    else:
+                        self.ctx.policyTable.extend(new_table)
 
                 case "resources":
-                    print("loading resources")
+                    logging.info("Loading resource registry")
+                    new_resources = ResourceRegistry.From_dict(content)
+
+                    if replace:
+                        self.ctx.resourceRegistry = new_resources
+                    else:
+                        self.ctx.resourceRegistry.extend(new_resources)
 
                 case _:
-                    print("unknown")
+                    logging.warning("Unknown field \"%s\"" % node)
 
-        self.ctx.status = f"File loaded with success !"
+        logging.info("File loaded !")
 
     def about_callback(self):
         QMessageBox.information(self, "About", "This is a Qt Menu Bar Example.")
+    
+    def closing(self):
+        logging.getLogger().removeHandler(self.log_handler)
 
 class MainWndow(QMainWindow):
     def __init__(self, ctx: AppContext):

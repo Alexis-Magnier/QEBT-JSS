@@ -18,4 +18,7 @@ def main():
     window = MainWindow(ctx)
 
     window.show()
-    sys.exit(app.exec_())
+    result = app.exec_()
+    window.closing()
+
+    sys.exit(result)

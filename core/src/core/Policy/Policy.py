@@ -15,9 +15,9 @@ class Policy:
     implementation: int = 0 # The actual behaviour tree
 
     @staticmethod
-    def From_dict(data:dict) -> Policy:
+    def From_dict(id, data:dict) -> Policy:
         return Policy(
-            id = data["id"],
+            id = id,
             name = data.get("name", ""),
             domains = set(data.get("domains", [])),
             descriptors = data.get("descriptors", {}),

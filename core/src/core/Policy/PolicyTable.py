@@ -49,15 +49,14 @@ def similarity_score(a: dict[str, float], b: dict[str, float], weights: dict[str
 @dataclass
 class PolicyTable:
 
-    policies: list[Policy] = field(default_factory=list)
+    policies: dict[Policy] = field(default_factory=list)
     
     @staticmethod
     def From_dict(data:dict) -> PolicyTable:
-
-        policies = [
-            Policy.From_dict(policy)
-            for policy in data["policies"]
-        ]
+        policies = {
+            int(id): Policy.From_dict(int(id), policy)
+            for id, policy in data["policies"].items()
+        }
 
         return PolicyTable(
             policies=policies
@@ -90,7 +89,7 @@ class PolicyTable:
         """
         p = list()
 
-        for policy in self.policies:
+        for policy in self.policies.values():
             
             # Check if the query domains is a subset or equal to the policy domains
             if not policy.domains >= query.domains:

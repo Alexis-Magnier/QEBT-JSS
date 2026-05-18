@@ -38,6 +38,12 @@ run-test
 uv run run-test
 ```
 
+### Run the GUI
+To run the test Graphical User Interface, you can execute the following command:
+```bash
+run-gui
+```
+
 ## Architecture
 
 The project is split into multiple packages, each responsible for either a specific stage of the pipeline or a higher-level organizational and project management role.
