@@ -2,6 +2,7 @@
 members = [
     "core",
     "test",
+    "gui",
     "pipeline/assembler",
     "pipeline/converter",
     "pipeline/dispatcher",

@@ -25,7 +25,6 @@ def render_graph(states:list[State], transitions):
 
     for state in states:
         id = state.id 
-        print(id, state.probability)
         color = cmap(state.probability)
 
         G.add_node(id, label="%0.2f" % state.probability, color=matplotlib.colors.rgb2hex(color))
@@ -87,7 +86,7 @@ def temp():
         if not p.is_acyclic():
             raise Exception("the jobs must be acyclic")
 
-        p.job_groups()
+        p.group()
         p.update_probabilities()
 
         return p
@@ -99,7 +98,7 @@ def temp():
         
         return policies
 
-    p = load_sequenceGraph(TEST_PROJECT_ROOT / "data/simple-sequence-graph.json")
+    p = load_sequenceGraph(TEST_PROJECT_ROOT / "data/data.json")
     policies = load_policies(TEST_PROJECT_ROOT / "data/disassembly-policy-table.json")
 
     stateSpace = StateSpaceGraph.From_SequenceGraph(p)
