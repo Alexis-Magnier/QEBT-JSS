@@ -9,9 +9,10 @@ dependencies = [
     "networkx",
     "matplotlib",
     "converter",
-    "pyside6",
+    "pyqtgraph",
     "PyQt5",
-    "PyQtWebEngine"
+    "PyQtWebEngine",
+    "PyOpenGL"
 ]
 
 [project.scripts]

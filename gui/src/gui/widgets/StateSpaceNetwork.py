@@ -1,18 +1,31 @@
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import Qt, QPointF, QRectF
 from PyQt5.QtGui import QPainter, QPen, QColor, QFont
+from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QVBoxLayout
+from PyQt5.QtGui import QPainter
 
-from core import StateSpaceGraph
+import pyqtgraph as pg
+import numpy as np
+
+from core import StateSpaceGraph, SequenceGraph
+from PyQt5.QtOpenGL import QGLWidget
+
+from ..AppContext import AppContext
 
 import random
 import math
 
 class StateSpaceNetworkWidget(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, ctx:AppContext, parent=None):
         super().__init__(parent)
         self.nodes = []        # List of QPointF positions
         self.node_labels = [] # List of strings
         self.edges = []       # List of tuples: (source_idx, target_idx, edge_label)
+
+        self.ctx = ctx
+
+        ctx.stateSpaceGraph.subscribe(self.callback)
+        ctx.sequenceGraph.subscribe(self.sequenceGraphChanged)
         
         self.zoom = 0.2       # Start zoomed out to see the hierarchy
         self.pan_x = 0
@@ -26,6 +39,47 @@ class StateSpaceNetworkWidget(QWidget):
         self.NODE_RADIUS = 20
         self.NDOE_RADIUS_SELECTED = 25 
         self.CLICK_RADIUS = 15
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+
+        pg.setConfigOption('antialias', False)  # Disables antialiasing globally for raw speed
+        # pg.setConfigOption('useOpenGL', True) # Alternative global OpenGL switch
+
+        # ... inside your class init or method ...
+
+        # 2. Initialize the view
+        view = pg.GraphicsLayoutWidget()
+        view.setViewport(QGLWidget())
+        view.setViewportUpdateMode(QGraphicsView.ViewportUpdateMode.FullViewportUpdate)
+
+        layout.addWidget(view)
+
+        plot = view.addPlot()
+
+        # 10,000 nodes with random (x, y) positions
+        N = 10000
+        pos = np.random.normal(size=(N, 2))
+
+        # Define edges
+        adj = np.vstack([np.arange(N-1), np.arange(1, N)]).T
+
+        # Create and add the graph item
+        g = pg.GraphItem()
+        g.setData(pos=pos, adj=adj, symbolBrush='b', symbolSize=5, pen='w')
+        plot.addItem(g)
+
+        plot.autoRange()
+    
+    def sequenceGraphChanged(self, data:SequenceGraph):
+        print(type(data))
+        g = StateSpaceGraph.From_SequenceGraph(data)
+        
+        self.ctx.stateSpaceGraph.value = g
+    
+    def callback(self, graph:StateSpaceGraph):
+        print("a")
+        
         
     def paintEvent(self, event):
         painter = QPainter(self)

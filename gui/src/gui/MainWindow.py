@@ -38,8 +38,7 @@ class MainWindow(QMainWindow):
         )
 
         # 2. Establish a Central Widget (The core anchor that cannot be removed)
-        self.central_canvas = QTextEdit()
-        self.central_canvas.setPlaceholderText("Central Workspace (e.g., Your Main Network Graph Visualizer)")
+        self.central_canvas = StateSpaceNetworkWidget(self.ctx)
         self.setCentralWidget(self.central_canvas)
 
         # 3. Initialize dynamic dock panels
