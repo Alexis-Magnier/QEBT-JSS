@@ -32,9 +32,8 @@ class ObservableState(QObject, Generic[T]):
     def value(self) -> T:
         with self._mutex:
             return self._value
-
-    @value.setter
-    def value(self, new_value: T):
+        
+    def set(self, new_value: T):
         with self._mutex:
             if self._frozen:
                 raise RuntimeError("State mutation rejected: Object is currently locked.")
@@ -44,8 +43,13 @@ class ObservableState(QObject, Generic[T]):
                 self._validate_type(new_value)
                 
             self._value = new_value
-            
+        
         self.changed.emit(new_value)
+
+
+    @value.setter
+    def value(self, new_value: T):
+        self.set(new_value)
 
     def subscribe(self, callback):
         self.changed.connect(callback)

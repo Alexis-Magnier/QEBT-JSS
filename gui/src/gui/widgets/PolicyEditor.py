@@ -1,4 +1,4 @@
-import sys
+import logging
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QSplitter, QListWidget, QListWidgetItem,
     QWidget, QFormLayout, QLineEdit, QSpinBox, QComboBox, QGroupBox,
@@ -9,13 +9,14 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, pyqtSignal
 
 from ..AppContext import AppContext
-from core import PolicyTable, ResourceRegistry, Resource, Policy
+from core import ResourceRegistry, Resource, Policy, PolicyTable
 
 class DomainSetWidget(QWidget):
     """Handles choosing existing items or adding new strings to a Python set."""
-    def __init__(self, existing_domains: list[str], parent=None):
+    def __init__(self, existing_domains: set[str], parent=None):
         super().__init__(parent)
-        self.existing_domains = set(existing_domains)
+
+        self.existing_domains = existing_domains
         
         # Setup UI layout
         main_layout = QVBoxLayout(self)
@@ -25,7 +26,7 @@ class DomainSetWidget(QWidget):
         input_layout = QHBoxLayout()
         self.combo = QComboBox()
         self.combo.setEditable(True)
-        self.combo.addItems(sorted(list(self.existing_domains)))
+        self.combo.addItems(self.existing_domains)
         
         self.add_btn = QPushButton("Add")
         input_layout.addWidget(self.combo, stretch=4)
@@ -39,6 +40,10 @@ class DomainSetWidget(QWidget):
         # Actions
         self.add_btn.clicked.connect(self._add_domain)
         self.list_widget.itemDoubleClicked.connect(self._remove_domain)
+    
+    def updateDomains(self):
+        self.combo.clear()
+        self.combo.addItems(self.existing_domains)
 
     def _add_domain(self):
         text = self.combo.currentText().strip()
@@ -77,7 +82,7 @@ class DescriptorDictWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         
         self.table = QTableWidget(0, 2)
-        self.table.setHorizontalHeaderLabels(["Value (Float)", "Descriptor (Text)"])
+        self.table.setHorizontalHeaderLabels(["Descriptor", "Value"])
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         layout.addWidget(self.table)
@@ -92,7 +97,7 @@ class DescriptorDictWidget(QWidget):
         self.add_btn.clicked.connect(self.add_row)
         self.remove_btn.clicked.connect(self.remove_selected)
 
-    def add_row(self, flt_val=0.0, str_val=""):
+    def add_row(self, str_val="", flt_val=1.0):
         row = self.table.rowCount()
         self.table.insertRow(row)
         
@@ -100,8 +105,8 @@ class DescriptorDictWidget(QWidget):
         num_item = QTableWidgetItem(str(float(flt_val)))
         num_item.setTextAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         
-        self.table.setItem(row, 0, num_item)
-        self.table.setItem(row, 1, QTableWidgetItem(str_val))
+        self.table.setItem(row, 0, QTableWidgetItem(str_val))
+        self.table.setItem(row, 1, num_item)
 
     def remove_selected(self):
         current_row = self.table.currentRow()
@@ -111,57 +116,63 @@ class DescriptorDictWidget(QWidget):
     def get_dict(self) -> dict[float, str]:
         result = {}
         for row in range(self.table.rowCount()):
-            key_item = self.table.item(row, 0)
-            val_item = self.table.item(row, 1)
+            val_item = self.table.item(row, 0)
+            key_item = self.table.item(row, 1)
             if key_item and val_item:
                 try:
-                    k = float(key_item.text().strip())
-                    v = val_item.text().strip()
+                    v = float(key_item.text().strip())
+                    k = val_item.text().strip()
                     result[k] = v
                 except ValueError:
                     continue  # Safely ignore un-parsable float input strings
         return result
 
-    def set_dict(self, data_dict: dict[float, str]):
+    def set_dict(self, data_dict: dict[str, float]):
         self.table.setRowCount(0)
         for k, v in data_dict.items():
-            self.add_row(v, k)
+            self.add_row(k, v)
 
 class PolicyEditor(QWidget):
     """Editor specific to Policies: Needs Target and Effect."""
-    def __init__(self):
+    def __init__(self, existing_domains):
         super().__init__()
         layout = QFormLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
-        
-        self.id_edit = QLineEdit()
-        self.id_edit.setReadOnly(True)
-        self.id_edit.setStyleSheet("background-color: #f0f0f0; color: #555;")
 
+        self.id_edit = 0
         self.name_edit = QLineEdit()
 
-        self.domains_edit = DomainSetWidget(["A", "B"])
+        self.domains_edit = DomainSetWidget(existing_domains)
         self.descriptors_edit = DescriptorDictWidget()
         
         self.impl_edit = QLineEdit()
         self.impl_edit.setText("N/A")
         self.impl_edit.setEnabled(False)
         
-        layout.addRow("ID:", self.id_edit)
         layout.addRow("Name:", self.name_edit)
         layout.addRow("Domains:", self.domains_edit)
         layout.addRow("Descriptors:", self.descriptors_edit)
         layout.addRow("Implementation:", self.impl_edit)
+    
+    def updateDomains(self):
+        self.domains_edit.updateDomains()
 
     def load_data(self, data:Policy):
-        self.id_edit.setText(str(data.id))
+        self.id_edit = data.id
         self.name_edit.setText(data.name)
         
-        self.domains_edit.set_domains(list(data.domains))
+        self.domains_edit.set_domains(sorted(list(data.domains)))
         self.descriptors_edit.set_dict(data.descriptors)
 
     def get_data(self):
-        return {"target": self.target_edit.text(), "effect": self.effect_edit.text()}
+        return Policy(
+            id=self.id_edit,
+            name=self.name_edit.text(),
+            descriptors=self.descriptors_edit.get_dict(),
+            domains=self.domains_edit.get_domains(),
+            implementation=None,
+            parameters=[]
+        )
 
 class ResourceEditor(QWidget):
     """Editor specific to Components: Needs Version and Language."""
@@ -294,9 +305,9 @@ class SelectionPanel(QWidget):
 # 2. Editor Panel (Right Side)
 # ---------------------------------------------------------
 class EditorPanel(QWidget):
-    data_saved = pyqtSignal(str, str, dict)
+    data_saved = pyqtSignal(str, int, object)
 
-    def __init__(self):
+    def __init__(self, existing_domains):
         super().__init__()
         layout = QVBoxLayout(self)
         
@@ -308,9 +319,9 @@ class EditorPanel(QWidget):
 
         # Global Properties (Shared by all)
         self.type_label = QLabel("N/A")
-        self.name_label = QLabel("N/A")
+        self.id_label = QLabel("N/A")
         form_layout.addRow("Registry Type:", self.type_label)
-        form_layout.addRow("Item Name:", self.name_label)
+        form_layout.addRow("Item ID:", self.id_label)
 
         # The Stacked Widget holds our specific sub-editors
         self.stacked_widget = QStackedWidget()
@@ -318,8 +329,8 @@ class EditorPanel(QWidget):
 
         # Instantiate and index sub-editors
         self.sub_editors = {
-            "Policies": PolicyEditor(),
-            "Resources": ResourceEditor()
+            "Policies": PolicyEditor(existing_domains),
+            #"Resources": ResourceEditor()
         }
         
         # Add them to the stack
@@ -332,19 +343,22 @@ class EditorPanel(QWidget):
         form_layout.addRow("", self.save_btn)
 
         self.current_type = None
-        self.current_name = None
+        self.current_id = None
         self.clear_editor()
 
         self.clear_editor() # Start in a disabled state
+    
+    def updateDomains(self):
+        self.sub_editors["Policies"].updateDomains()
 
-    def load_item(self, reg_type, item_name, item_data):
+    def load_item(self, reg_type, item_id, item_data):
         """Switches the visible editor sub-panel and loads specific data."""
         self.current_type = reg_type
-        self.current_name = item_name
+        self.current_id = item_id
         
-        self.group_box.setTitle(f"Editing: {item_name}")
+        self.group_box.setTitle(f"Editing: {item_id}")
         self.type_label.setText(reg_type)
-        self.name_label.setText(item_name)
+        self.id_label.setText(str(item_id))
 
         # Switch to the correct form stack page if we have a custom sub-editor for it
         if reg_type in self.sub_editors:
@@ -362,19 +376,19 @@ class EditorPanel(QWidget):
         """Collects data from the active sub-editor and fires a save signal."""
         if self.current_type in self.sub_editors:
             updated_properties = self.sub_editors[self.current_type].get_data()
-            self.data_saved.emit(self.current_type, self.current_name, updated_properties)
+            self.data_saved.emit(self.current_type, self.current_id, updated_properties)
 
     def clear_editor(self):
         self.group_box.setTitle("Editor - No Item Selected")
         self.type_label.setText("N/A")
-        self.name_label.setText("N/A")
+        self.id_label.setText("N/A")
         self.current_type = None
-        self.current_name = None
+        self.current_id = None
         self.save_btn.setEnabled(False)
         self.stacked_widget.setVisible(False)
 
 class SelectionPanel(QWidget):
-    item_selected = pyqtSignal(str, str)
+    item_selected = pyqtSignal(str, int, object)
     item_cleared = pyqtSignal()
 
     def __init__(self):
@@ -385,17 +399,25 @@ class SelectionPanel(QWidget):
         self.tabs = QTabWidget()
         layout.addWidget(self.tabs)
         self.lists = {} 
-
+    
     def update_single_type(self, reg_type, items_list):
-        """Updates or creates exactly ONE tab without altering the others."""
-        # If the tab already exists, look it up, otherwise make it
         if reg_type in self.lists:
             list_widget = self.lists[reg_type]
-            list_widget.blockSignals(True) # Prevent firing selection changes while replacing data
+            list_widget.blockSignals(True)
             list_widget.clear()
-            list_widget.addItems([str(e) for e in items_list])
+            
+            for item_data in items_list:
+                # Create the list item
+                item = QListWidgetItem(item_data.name)
+                
+                # Store the ID and the full data dictionary inside the item itself!
+                item.setData(Qt.ItemDataRole.UserRole, item_data.id)
+                # Optional: store the whole dict for easy access later
+                item.setData(Qt.ItemDataRole.UserRole + 1, item_data) 
+                
+                list_widget.addItem(item)
+                
             list_widget.blockSignals(False)
-
         else:
             # First time creating this type layout dynamically
             tab = QWidget()
@@ -416,13 +438,31 @@ class SelectionPanel(QWidget):
             self.tabs.addTab(tab, reg_type)
 
     def filter_list(self, text, list_widget):
+        search_query = text.lower().strip()
+        
         for i in range(list_widget.count()):
             item = list_widget.item(i)
-            item.setHidden(text.lower() not in item.text().lower())
+            
+            # 1. Get the visible name
+            item_name = item.text().lower()
+            
+            # 2. Get the hidden ID (fallback to empty string if missing)
+            item_id = str(item.data(Qt.ItemDataRole.UserRole)).lower()
+            
+            # Match condition: True if query is found in name OR in ID
+            matches_name = search_query in item_name
+            matches_id = search_query in item_id
+            
+            # Hide the item if it doesn't match either property
+            item.setHidden(not (matches_name or matches_id))
 
     def on_item_selected(self, current_item, reg_type):
         if current_item:
-            self.item_selected.emit(reg_type, current_item.text())
+            # Retrieve the hidden complete dictionary we stored at slot (UserRole + 1)
+            item_data = current_item.data(Qt.ItemDataRole.UserRole + 1)
+            
+            # Pass the rich data straight to your editor panel
+            self.item_selected.emit(reg_type, item_data.id, item_data)
         else:
             self.item_cleared.emit()
 
@@ -432,19 +472,47 @@ class PolicyPropertyEditor(QWidget):
     def __init__(self, ctx:AppContext, parent=None):
         super().__init__()
 
-        ctx.policyTable.changed.connect(self.policies_changed_callback)
         self.current = None
         self.ctx = ctx
 
-        self.app_database = {
-            "Policies": {},
-            "Resources": {
-                "Database": {"version": "v14.2", "language": "PostgreSQL"},
-                "Auth Service": {"version": "v2.1", "language": "Go"}
-            }
+        self.types = {
+            "Policies": {
+                "content": {},
+                "ctx-value": self.ctx.policyTable,
+                "attribute": "policies",
+                "callback": lambda data: self.on_policies_changed(data)
+            },
         }
 
+        self.existing_domains = set()
+
+        self.setup_callbacks()
         self.setup_ui()
+    
+    def on_policies_changed(self, data: PolicyTable):
+        self.existing_domains.clear()
+
+        
+        for p in data.policies.values():
+            self.existing_domains |= p.domains
+        
+        self.editor_panel.updateDomains()
+        
+    
+    def setup_callbacks(self):
+        for type, info in self.types.items():
+            info["ctx-value"].changed.connect(
+                lambda arg: self.callback(arg, type, info)
+            )
+            
+        
+    def callback(self, data, type, info):
+        self.types[type]["content"] = getattr(data, info["attribute"])
+        self.reload_type_from_db(type)
+
+        if not (clbk := info.get("callback")) is None:
+            clbk(data)
+
 
     def setup_ui(self):
         main_layout = QVBoxLayout(self)
@@ -454,7 +522,7 @@ class PolicyPropertyEditor(QWidget):
         main_layout.addWidget(splitter)
 
         self.selection_panel = SelectionPanel()
-        self.editor_panel = EditorPanel()
+        self.editor_panel = EditorPanel(self.existing_domains)
 
         splitter.addWidget(self.selection_panel)
         splitter.addWidget(self.editor_panel)
@@ -467,28 +535,38 @@ class PolicyPropertyEditor(QWidget):
 
         # Initial isolated loads
         self.reload_type_from_db("Policies")
-        self.reload_type_from_db("Resources")
 
     def reload_type_from_db(self, reg_type):
         """Fetches items for ONLY one type and tells the selection panel to update."""
-        items_list = list(self.app_database.get(reg_type, {}).keys())
+        items_list = list(self.types.get(reg_type, {}).get("content", {}).values())
         self.selection_panel.update_single_type(reg_type, items_list)
 
-    def handle_item_selection(self, reg_type, item_name):
+    def handle_item_selection(self, reg_type, item_id):
         """Extracts the underlying dictionary for an item and forwards it to the editor."""
-        item_data = self.app_database.get(reg_type, {}).get(item_name, {})
-        self.editor_panel.load_item(reg_type, item_name, item_data)
+        item_data = self.types.get(reg_type, {}).get("content", {}).get(item_id, {})
 
-    def handle_data_save(self, reg_type, item_name, updated_properties):
+        self.editor_panel.load_item(reg_type, item_id, item_data)
+
+    def handle_data_save(self, reg_type, item_id, updated_properties):
         """Saves editor changes into state without touching other data categories."""
-        if reg_type in self.app_database and item_name in self.app_database[reg_type]:
-            self.app_database[reg_type][item_name] = updated_properties
-            QMessageBox.information(self, "Success", f"Saved changes to {item_name} successfully!")
-    
-    def policies_changed_callback(self, v:PolicyTable):
-        self.app_database["Policies"] = {str(id): p for id, p in  v.policies.items()}
-        self.reload_type_from_db("Policies")
 
+        
+        if reg_type in self.types and item_id in self.types[reg_type]["content"]:
+            type = self.types[reg_type]
+
+            local = type["content"]
+            local[item_id] = updated_properties
+
+            ctx_value = type["ctx-value"]
+
+            with ctx_value:
+                value = ctx_value.value
+                setattr(value, type["attribute"], local)
+
+            ctx_value.changed.emit(ctx_value._value)
+
+            logging.debug("Saved changed to item %d" % item_id)
+    
     def setups_ui(self):
         main_layout = QVBoxLayout(self)
 

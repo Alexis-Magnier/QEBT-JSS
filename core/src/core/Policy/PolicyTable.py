@@ -53,7 +53,7 @@ def similarity_score(a: dict[str, float], b: dict[str, float], weights: dict[str
 @dataclass
 class PolicyTable:
 
-    policies: dict[Policy] = field(default_factory=list)
+    policies: dict[int, Policy] = field(default_factory=list)
     
     @staticmethod
     def From_dict(data:dict) -> PolicyTable:
