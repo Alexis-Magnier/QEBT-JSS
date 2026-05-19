@@ -19,13 +19,13 @@ class AppContext(QObject):
 
     def __init__(self):
         super().__init__()
-        # Main Reactive State Targets
 
         self.loader: AsyncFileLoader = None
         self.sequenceGraph = ObservableState[SequenceGraph](initial_value=None)
         self.stateSpaceGraph = ObservableState[StateSpaceGraph](initial_value=None)
         self.policyTable = ObservableState[PolicyTable](initial_value=None)
         self.resourceRegistry = ObservableState[ResourceRegistry](initial_value=None)
+        self.selectedNode = ObservableState(initial_value=None)
         
         self._status = "Idle"
         self._status_mutex = threading.Lock()

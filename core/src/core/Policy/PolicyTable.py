@@ -10,6 +10,10 @@ from .types import *
 from .Query import Query
 from .QueryResult import QueryResult
 
+
+POLICIES_NODE = "policies"
+
+
 def cosine_similarity(a: dict[str, float], b: dict[str, float], weights: dict[str, float]) -> float:
     # Union of all keys
     keys = set(a) | set(b)
@@ -53,10 +57,15 @@ class PolicyTable:
     
     @staticmethod
     def From_dict(data:dict) -> PolicyTable:
-        policies = {
-            int(id): Policy.From_dict(int(id), policy)
-            for id, policy in data["policies"].items()
-        }
+        try:
+            policies = {
+                int(id): Policy.From_dict(int(id), policy)
+                for id, policy in data[POLICIES_NODE].items()
+            }
+        except KeyError as e:
+            raise Exception("Could not find the \"%s\" data entry" % POLICIES_NODE)
+        except AttributeError as e:
+            raise Exception("Data is ill-formated. Expected \"%s\" to be a dictionary (%s)" % (POLICIES_NODE, e))
 
         return PolicyTable(
             policies=policies

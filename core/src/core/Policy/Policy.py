@@ -4,6 +4,12 @@
 from dataclasses import dataclass, field
 from ..types import *
 
+NAME_ENTRY = "name"
+DOMAINS_ENTRY = "domains"
+DESCRIPTORS_ENTRY = "descriptors"
+PARAMETERS_ENTRY = "parameters"
+IMPLMENTATION_ENTRY = "implementation"
+
 @dataclass
 class Policy:
     id: PolicyID = INVALID_POLICY_ID
@@ -18,9 +24,9 @@ class Policy:
     def From_dict(id, data:dict) -> Policy:
         return Policy(
             id = id,
-            name = data.get("name", ""),
-            domains = set(data.get("domains", [])),
-            descriptors = data.get("descriptors", {}),
-            parameters = data.get("parameters", {}),
-            implementation = data.get("implementation", None)
+            name = data.get(NAME_ENTRY, ""),
+            domains = set(data.get(DOMAINS_ENTRY, [])),
+            descriptors = data.get(DESCRIPTORS_ENTRY, {}),
+            parameters = data.get(PARAMETERS_ENTRY, {}),
+            implementation = data.get(IMPLMENTATION_ENTRY, None)
         )

@@ -5,6 +5,11 @@ from dataclasses import dataclass, field
 from .Task import Task
 from .types import *
 
+TASKS_NODE = "tasks"
+NAME_ENTRY = "name"
+REQUIRMENTS_ENTRY = "requires"
+PROBABILITY_ENTRY = "probability"
+
 @dataclass
 class Job:
     # Serialisable data
@@ -27,14 +32,14 @@ class Job:
 
         tasks = [
             Task.From_dict(j)
-            for j in data.get("tasks", [])
+            for j in data.get(TASKS_NODE, [])
         ]
 
         return Job(
             id=id,
-            name=data.get("name", ""),
-            requirments=data.get("requires", []),
-            probability=data.get("probability", 1.0),
+            name=data.get(NAME_ENTRY, ""),
+            requirments=data.get(REQUIRMENTS_ENTRY, []),
+            probability=data.get(PROBABILITY_ENTRY, 1.0),
             tasks=tasks,
         )
 

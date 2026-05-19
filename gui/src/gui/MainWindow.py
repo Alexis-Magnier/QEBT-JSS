@@ -8,6 +8,7 @@ from .AppContext import AppContext
 from .widgets.StateSpaceNetwork import StateSpaceNetworkWidget
 from .AsyncFileLoader import AsyncFileLoader
 from .widgets.LogDockWidget import LogRenderSystem, LogHandler
+from .widgets.PolicyEditor import PolicyPropertyEditor
 
 from core import (
     SequenceGraph, PolicyTable, ResourceRegistry
@@ -18,56 +19,9 @@ from PyQt5.QtWidgets import (
     QListWidget, QWidget, QVBoxLayout, QLabel, QAction, QMessageBox
 )
 
-import time
 from pathlib import Path
 
-# Core HTML Shell delivering dynamic Mermaid.js compilation engine offline/online
-MERMAID_HTML = """
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-    <script>
-        mermaid.initialize({ startOnLoad: true, theme: 'dark' });
-        
-        function updateChart(code) {
-            var container = document.getElementById('graph');
-            container.innerHTML = code;
-            container.removeAttribute('data-processed');
-            mermaid.run({
-                nodes: [container]
-            });
-        }
-    </script>
-    <style>
-        body { 
-            background-color: #222222; 
-            margin: 0; 
-            padding: 20px; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 90vh;
-        }
-        #graph {
-            color: #ffffff;
-        }
-    </style>
-</head>
-<body>
-    <div id="graph" class="mermaid">
-        graph LR
-        A[File Loaded] --> B[Network Visualized]
-        A --> C[Mermaid Ready]
-    </div>
-</body>
-</html>
-"""
-
 class MainWindow(QMainWindow):
-
-
     def __init__(self, ctx:AppContext):
         super().__init__()
         logging.getLogger().name = "app"
@@ -112,15 +66,14 @@ class MainWindow(QMainWindow):
 
     def init_dock_panels(self):
         # --- PANEL A: Mermaid Code Editor (Initial State: Left Side) ---
-        dock_editor = self.add_panel("Mermaid Code Deck", Qt.LeftDockWidgetArea)
+        policy_editor = self.add_panel("Policy Editor", Qt.LeftDockWidgetArea)
         # Configure what user actions are allowed (Floating, Closing, Moving)
-        dock_editor.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable | QDockWidget.DockWidgetClosable)
-        dock_editor.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
+        policy_editor.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable | QDockWidget.DockWidgetClosable)
+        policy_editor.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         
         # Add actual interactive widgets inside the dock shell
-        editor_widget = QTextEdit()
-        editor_widget.setPlainText("graph TD\n    A --> B")
-        dock_editor.setWidget(editor_widget)
+        editor_widget = PolicyPropertyEditor(self.ctx, self)
+        policy_editor.setWidget(editor_widget)
 
         # --- PANEL B: Data Properties Inspector (Initial State: Right Side) ---
         dock_inspector = self.add_panel("Property Inspector", Qt.RightDockWidgetArea)
@@ -188,7 +141,6 @@ class MainWindow(QMainWindow):
     
     def open_file_callback(self):
         path = Path(self.file_popup("Select file to open"))
-        print("Open action triggered!")
 
         if not path:
             return
@@ -217,31 +169,46 @@ class MainWindow(QMainWindow):
     def extend_file_callback(self):
         self.file_popup("Select file to import")
         print("Extend !")
+    
+    def show_exception_dialog(self, exception: Exception, parent=None):
+        if not parent:
+            parent = self
+
+        """Displays a critical QMessageBox with an expandable traceback details panel."""
+        # Fetch the full stack trace as a formatted string
+        traceback_str = traceback.format_exc()
+        
+        msg_box = QMessageBox(parent)
+        msg_box.setSizeGripEnabled(True)
+        msg_box.setIcon(QMessageBox.Icon.Critical)
+        msg_box.setWindowTitle("Execution Error")
+        
+        # Primary message text
+        msg_box.setText("An unexpected system exception occurred.")
+        
+        error_summary = f"<b>{type(exception).__name__}:</b> {exception}"
+        msg_box.setInformativeText(error_summary)
+
+        msg_box.setDetailedText(traceback_str)
+        
+        msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
+        msg_box.exec()
 
     def load_file_replace(self, data):
         try:
             self.load_file(data, replace=True)
-        except Exception:
-            logging.error("Exception encountered")
-            QMessageBox.warning(self,
-                "Exception encountered",
-                traceback.format_exc()
-            )
-
+        except Exception as e:
+            logging.error("Exception encountered : %s" % e)
+            self.show_exception_dialog(e)
 
     def load_file_extend(self, data):
         try:
             self.load_file(data, replace=False)
-        except Exception:
-            logging.exception("Exception encountered")
-            QMessageBox.warning(self,
-                "Exception encountered",
-                traceback.format_exc()
-            )
+        except Exception as e:
+            logging.exception("Exception encountered : %s" % e)
+            self.show_exception_dialog(e)
     
     def load_file(self, data:dict, replace:bool):
-
-        
         for node, content in data.items():
             match node:
                 case "precedence-map":
@@ -271,18 +238,19 @@ class MainWindow(QMainWindow):
                     new_table = PolicyTable.From_dict(content)
 
                     if replace:
-                        self.ctx.policyTable = new_table
+                        self.ctx.policyTable.value = new_table
                     else:
-                        self.ctx.policyTable.extend(new_table)
+                        self.ctx.policyTable.value.extend(new_table)
+                    
 
                 case "resources":
                     logging.info("Loading resource registry")
                     new_resources = ResourceRegistry.From_dict(content)
 
                     if replace:
-                        self.ctx.resourceRegistry = new_resources
+                        self.ctx.resourceRegistry.value = new_resources
                     else:
-                        self.ctx.resourceRegistry.extend(new_resources)
+                        self.ctx.resourceRegistry.value.extend(new_resources)
 
                 case _:
                     logging.warning("Unknown field \"%s\"" % node)
@@ -294,81 +262,3 @@ class MainWindow(QMainWindow):
     
     def closing(self):
         logging.getLogger().removeHandler(self.log_handler)
-
-class MainWndow(QMainWindow):
-    def __init__(self, ctx: AppContext):
-        super().__init__()
-        self.ctx = ctx
-        self.setWindowTitle("Qt High-Scale Network & Mermaid Workspace")
-        
-        self.init_ui()
-        
-        # Enforce execution barrier: Requires file immediately upon initialization
-        # QTimer.singleShot(0, self.require_file_on_startup)
-
-    def init_ui(self):
-        main_splitter = QSplitter(Qt.Horizontal)
-        self.setCentralWidget(main_splitter)
-
-        # Left panel allocations -> High Density Graph Setup
-        self.network_widget = StateSpaceNetworkWidget()
-        main_splitter.addWidget(self.network_widget)
-
-        # Right panel allocations -> Mermaid Playground Configurations
-        mermaid_container = QWidget()
-        mermaid_layout = QVBoxLayout(mermaid_container)
-        mermaid_layout.setContentsMargins(10, 10, 10, 10)
-
-        mermaid_layout.addWidget(QLabel("<b>Mermaid Markup Editor:</b>"))
-        self.code_editor = QTextEdit()
-        self.code_editor.setPlaceholderText("Write raw structural Mermaid configurations...")
-        self.code_editor.setPlainText("graph TD\n    A[Data File Read] --> B(Generate Graph Canvas)\n    B --> C{10,000 Points Verified}\n    C -->|Render| D[Smooth Realtime Zoom]")
-        self.code_editor.setMaximumHeight(160)
-        mermaid_layout.addWidget(self.code_editor)
-
-        self.render_btn = QPushButton("Compile Diagram")
-        self.render_btn.setStyleSheet("background-color: #00adb5; color: white; font-weight: bold; padding: 8px;")
-        self.render_btn.clicked.connect(self.compile_mermaid_diagram)
-        mermaid_layout.addWidget(self.render_btn)
-
-        self.web_view = QWebEngineView()
-        self.web_view.setHtml(MERMAID_HTML)
-        mermaid_layout.addWidget(self.web_view)
-
-        main_splitter.addWidget(mermaid_container)
-        main_splitter.setSizes([750, 550])
-
-    def require_file_on_startup(self):
-        options = QFileDialog.Options()
-        file_path, _ = QFileDialog.getOpenFileName(
-            self, 
-            "Required Execution Target: Select File to Open", 
-            "", 
-            "All Files (*);;Text Documents (*.txt);;Data Files (*.json *.csv)", 
-            options=options
-        )
-        
-        if file_path:
-            try:
-                with open(file_path, 'r', encoding='utf-8') as selected_file:
-                    _ = selected_file.read() # Target data parsed/opened successfully
-                
-                QMessageBox.information(
-                    self, "Initialization Success", 
-                    f"Successfully mounted file:\n{file_path}\n\nLoading 10,000 structural node matrix view."
-                )
-            except Exception as error:
-                QMessageBox.critical(self, "Read Failure", f"Fatal execution interruption reading file:\n{str(error)}")
-                sys.exit(1)
-        else:
-            # Enforce mandatory file execution clause: close application if bypassed
-            QMessageBox.warning(self, "Bypass Prevented", "This application requires a file instantiation context to run.")
-            sys.exit(0)
-
-    def compile_mermaid_diagram(self):
-        raw_text = self.code_editor.toPlainText()
-        # Normalize text characters safely avoiding string injection boundary issues inside JS Engine
-        sanatized_js_string = raw_text.replace("\\", "\\\\").replace("'", "\\'").replace("\n", "\\n")
-        
-        execution_pipeline = f"updateChart('{sanatized_js_string}');"
-        self.web_view.page().runJavaScript(execution_pipeline)

@@ -18,7 +18,7 @@
           "component.fracture_risk": 0.2
         },
         "parameters": [],
-        "implementation": []
+        "implementation": null
       },
       "1": {
         "name": "High torque drill removal",
@@ -37,7 +37,7 @@
           "component.fracture_risk": 0.7
         },
         "parameters": [],
-        "implementation": []
+        "implementation": null
       },
       "2": {
         "name": "Seized fastener extraction",
@@ -56,7 +56,7 @@
           "component.fracture_risk": 0.9
         },
         "parameters": [],
-        "implementation": []
+        "implementation": null
       },
       "3": {
         "name": "Cable extraction with grippers",
@@ -74,7 +74,7 @@
           "component.fracture_risk": 0.1
         },
         "parameters": [],
-        "implementation": []
+        "implementation": null
       },
 
       "4": {
@@ -93,7 +93,7 @@
           "component.fracture_risk": 0.4
         },
         "parameters": [],
-        "implementation": []
+        "implementation": null
       },
 			"5": {
         "name": "Light snap-fit cover lift",
@@ -113,7 +113,7 @@
           "component.fracture_risk": 0.2
         },
         "parameters": [],
-        "implementation": []
+        "implementation": null
       },
       "6": {
         "name": "Edge lift precision grip",
@@ -133,7 +133,7 @@
           "component.surface_friction": 0.4
         },
         "parameters": [],
-        "implementation": []
+        "implementation": null
       },
       "7": {
         "name": "Dual corner lift with grippers",
@@ -153,7 +153,7 @@
           "component.surface_friction": 0.5
         },
         "parameters": [],
-        "implementation": []
+        "implementation": null
       },
       "8": {
         "name": "Distributed suction lift",
@@ -173,7 +173,7 @@
           "component.surface_friction": 0.2
         },
         "parameters": [],
-        "implementation": []
+        "implementation": null
       },
       "9": {
         "name": "Sliding edge disengagement lift",
@@ -193,7 +193,7 @@
           "component.surface_friction": 0.7
         },
         "parameters": [],
-        "implementation": []
+        "implementation": null
       },
       "10": {
         "name": "Full surface lift with distributed grip",
@@ -213,7 +213,7 @@
           "component.surface_friction": 0.6
         },
         "parameters": [],
-        "implementation": []
+        "implementation": null
       },
 			"11": {
         "name": "Precision battery cell extraction",
@@ -233,7 +233,7 @@
           "component.accessibility": 0.7
         },
         "parameters": [],
-        "implementation": []
+        "implementation": null
       },
       "12": {
         "name": "High stiffness pried metal part extraction",
@@ -253,7 +253,7 @@
           "component.accessibility": 0.5
         },
         "parameters": [],
-        "implementation": []
+        "implementation": null
       },
       "13": {
         "name": "Adhesive-bound component peeling extraction",
@@ -273,7 +273,7 @@
           "component.accessibility": 0.6
         },
         "parameters": [],
-        "implementation": []
+        "implementation": null
       },
       "14": {
         "name": "Deep recessed structural extraction",
@@ -293,7 +293,7 @@
           "component.accessibility": 0.3
         },
         "parameters": [],
-        "implementation": []
+        "implementation": null
       },
       "15": {
         "name": "Fragile electrochemical component extraction",
@@ -313,7 +313,7 @@
           "component.accessibility": 0.5
         },
         "parameters": [],
-        "implementation": []
+        "implementation": null
       },
       "16": {
         "name":"Modular snap-fit extraction",
@@ -333,7 +333,7 @@
           "component.accessibility": 0.8
         },
         "parameters": [],
-        "implementation": []
+        "implementation": null
       },
       "17": {
         "name": "High integration dense pack extraction",
@@ -353,7 +353,7 @@
           "component.accessibility": 0.4
         },
         "parameters": [],
-        "implementation": []
+        "implementation": null
       },
       "18": {
         "name": "Light structural bracket extraction",
@@ -373,7 +373,7 @@
           "component.accessibility": 0.7
         },
         "parameters": [],
-        "implementation": []
+        "implementation": null
       }
     }
   }
